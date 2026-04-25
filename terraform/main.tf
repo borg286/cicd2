@@ -9,6 +9,7 @@ terraform {
 
 provider "gitea" {
   base_url = "http://forgejo-http.forgejo:3000"
+  token    = var.gitea_token
 }
 
 variable "gitea_token" {
