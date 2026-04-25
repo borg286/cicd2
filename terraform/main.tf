@@ -16,20 +16,21 @@ variable "gitea_token" {
   sensitive = true
 }
 
-resource "gitea_organization" "my_org" {
+resource "gitea_org" "my_org" {
   name = "my-org"
 }
 
 resource "gitea_repository" "mirror_repo" {
   name        = "cloned-repo"
-  username    = gitea_organization.my_org.name
+  username    = gitea_org.my_org.name
   mirror      = true
   # Placeholder - replace with your actual GitHub repo URL
   # example: "https://github.com/example/repo.git"
 }
 
 resource "gitea_user" "flux_user" {
-  username = "flux-agent"
-  email    = "flux@example.com"
-  password = "SecurePassword123" # Replace with a secure password
+  username   = "flux-agent"
+  login_name = "flux-agent"
+  email      = "flux@example.com"
+  password   = "SecurePassword123" # Replace with a secure password
 }
