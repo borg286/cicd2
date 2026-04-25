@@ -29,9 +29,14 @@ resource "gitea_repository" "mirror_repo" {
   # example: "https://github.com/example/repo.git"
 }
 
+variable "flux_user_password" {
+  type      = string
+  sensitive = true
+}
+
 resource "gitea_user" "flux_user" {
   username   = "flux-agent"
   login_name = "flux-agent"
   email      = "flux@example.com"
-  password   = "SecurePassword123" # Replace with a secure password
+  password   = var.flux_user_password
 }
