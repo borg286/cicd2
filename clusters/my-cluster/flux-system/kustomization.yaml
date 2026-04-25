@@ -3,3 +3,6 @@ kind: Kustomization
 resources:
 - gotk-components.yaml
 - gotk-sync.yaml
+- gitea-helmrelease.yaml
+- tf-controller-install.yaml
+- gitea-terraform.yaml

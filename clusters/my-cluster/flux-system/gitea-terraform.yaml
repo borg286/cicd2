@@ -1,0 +1,13 @@
+apiVersion: infra.contrib.fluxcd.io/v1alpha1
+kind: Terraform
+metadata:
+  name: gitea-resources
+  namespace: flux-system
+spec:
+  interval: 5m
+  approvePlan: "auto"
+  path: ./terraform
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
