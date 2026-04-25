@@ -13,6 +13,4 @@ spec:
     namespace: flux-system
   varsFrom:
     - kind: Secret
-      name: gitea-token
-    - kind: Secret
-      name: gitea-flux-password
+      name: gitea-admin

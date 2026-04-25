@@ -9,12 +9,22 @@ terraform {
 
 provider "gitea" {
   base_url = "http://forgejo-http.forgejo:3000"
-  token    = var.gitea_token
+  username = var.username
+  password = var.password
 }
 
-variable "gitea_token" {
+variable "username" {
+  type      = string
+}
+
+variable "password" {
   type      = string
   sensitive = true
+}
+
+resource "gitea_token" "tofu_managed_token" {
+  name   = "tofu-sync-token"
+  scopes = ["all"]
 }
 
 resource "gitea_org" "my_org" {
