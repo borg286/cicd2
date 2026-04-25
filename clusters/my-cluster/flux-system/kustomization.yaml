@@ -5,4 +5,4 @@ resources:
 - gotk-sync.yaml
 - gitea-helmrelease.yaml
 - tf-controller-install.yaml
-- gitea-terraform.yaml
+- apps-kustomization.yaml
