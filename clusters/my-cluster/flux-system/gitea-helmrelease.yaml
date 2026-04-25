@@ -5,7 +5,8 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  url: https://codeberg.org/forgejo/helm-charts
+  url: oci://code.forgejo.org/forgejo-helm
+  type: oci
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
