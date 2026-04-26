@@ -1,13 +1,8 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: spark
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: spark-script-cm
-  namespace: spark
+  namespace: default
 data:
   hello.py: |
     from pyspark.sql import SparkSession
@@ -27,13 +22,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: spark-sa
-  namespace: spark
+  namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: spark-role
-  namespace: spark
+  namespace: default
 rules:
 - apiGroups: [""]
   resources: ["pods"]
@@ -49,7 +44,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: spark-rb
-  namespace: spark
+  namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -57,13 +52,13 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: spark-sa
-  namespace: spark
+  namespace: default
 ---
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
   name: spark-hello-world
-  namespace: spark
+  namespace: default
 spec:
   type: Python
   pythonVersion: "3"
