@@ -6,3 +6,4 @@ resources:
   - spark-hello-world.yaml
   - users-terraform.yaml
   - lgtm-stack.yaml
+  - custom-dashboard-sample.yaml
