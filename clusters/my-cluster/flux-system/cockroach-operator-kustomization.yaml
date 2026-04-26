@@ -5,10 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m
-  path: ./clusters/my-cluster/apps/cockroach-operator
+  path: ./deploy
   sourceRef:
     kind: GitRepository
-    name: flux-system
+    name: cockroach-operator
   prune: true
   wait: true
   dependsOn:

@@ -8,3 +8,4 @@ resources:
 - spark-operator.yaml
 - cockroach-operator-kustomization.yaml
 - cockroach-cluster-kustomization.yaml
+- cockroach-operator-gitrepo.yaml
