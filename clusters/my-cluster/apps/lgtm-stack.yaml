@@ -12,7 +12,7 @@ spec:
   interval: 1h
   url: https://grafana.github.io/helm-charts
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: loki
@@ -33,7 +33,7 @@ spec:
         enabled: true
         size: 50Gi
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: tempo
@@ -53,7 +53,7 @@ spec:
         trace:
           backend: local
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: mimir
@@ -68,7 +68,7 @@ spec:
         namespace: flux-system
   interval: 1h
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: grafana
