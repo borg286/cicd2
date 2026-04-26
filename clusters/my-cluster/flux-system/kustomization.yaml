@@ -6,3 +6,5 @@ resources:
 - ../../../bootstrap/tf-controller-install.yaml
 - apps-kustomization.yaml
 - spark-operator.yaml
+- cockroach-operator-kustomization.yaml
+- cockroach-cluster-kustomization.yaml
