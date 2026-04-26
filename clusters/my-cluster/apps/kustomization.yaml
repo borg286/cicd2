@@ -7,3 +7,6 @@ resources:
   - users-terraform.yaml
   - lgtm-stack.yaml
   - custom-dashboard-sample.yaml
+  - cockroachdb-sources.yaml
+  - cockroach-operator.yaml
+  - cockroachdb-cluster.yaml
