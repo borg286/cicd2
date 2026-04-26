@@ -34,7 +34,6 @@ resource "gitea_repository" "mirror_repo" {
   name        = "cloned-repo"
   username    = gitea_org.my_org.name
   mirror      = true
-  migration_service = "github"
   migration_clone_address = "https://github.com/borg286/cicd2.git"
 }
 
