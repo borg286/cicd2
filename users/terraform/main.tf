@@ -39,5 +39,9 @@ resource "gitea_team" "devs" {
   organisation = "my-org"
   description  = "Devs of my-org"
   permission   = "write"
-  members      = [gitea_user.borg286.username]
+}
+
+resource "gitea_team_membership" "borg286_devs" {
+  team_id  = gitea_team.devs.id
+  username = gitea_user.borg286.username
 }
