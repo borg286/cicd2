@@ -8,10 +8,10 @@ spec:
     secretKeyRef:
       name: atlas-db-credentials
       key: url
-  devdb:
-    schema:
-      sql: "CREATE SCHEMA IF NOT EXISTS atlas_dev;"
-    engine: postgres 
+  devURLFrom:
+    secretKeyRef:
+      name: atlas-db-credentials
+      key: dev_url
   schema:
     sql: |
       CREATE TABLE users (
