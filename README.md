@@ -22,8 +22,6 @@ This setup ensures that Tofu Controller is applied during bootstrapping and cont
 
 To bootstrap a new cluster, follow these steps:
 
-### `bootstrap.sh` Content
-
 ```bash
 #!/bin/bash
 
@@ -68,25 +66,10 @@ echo "Gitea Flux Password: $GITEA_FLUX_PASS"
 echo "Please save these credentials securely."
 
 kubectl apply -f https://github.com/fluxcd/flux2/releases/latest/download/install.yaml
-kubectl apply -f gotk-sync.yaml
+kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/tf-controller-install.yaml
+kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/gotk-sync.yaml
+
 ```
-
-1.  **Set up Secrets**: The `bootstrap.sh` script handles this automatically by generating random passwords and creating the necessary secrets in the `forgejo` and `flux-system` namespaces.
-
-2.  **Run the Script**: Execute the script from the root of the repository (or the bootstrap folder):
-    ```bash
-    ./bootstrap/bootstrap.sh
-    ```
-
-    *Note: The script requires `kubectl` to be configured to point to your target cluster.*
-
-3.  **Manual Fallback**: If you prefer to install components manually without the script:
-    - Apply the Flux installation manifests directly from GitHub or via the Flux CLI.
-    - Apply the Tofu Controller manifest from this repository:
-      ```bash
-      kubectl apply -f bootstrap/tf-controller-install.yaml
-      ```
-    - Create the required secrets (`gitea-admin`, `gitea-flux-password`) manually with appropriate keys.
 
 ## Future Modifications
 To update the Tofu Controller version or configuration, modify the file in the `bootstrap/` folder and Flux will automatically reconcile the changes in the cluster.
