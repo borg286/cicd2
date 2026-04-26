@@ -5,3 +5,4 @@ resources:
 - gitea-helmrelease.yaml
 - ../../../bootstrap/tf-controller-install.yaml
 - apps-kustomization.yaml
+- spark-operator.yaml
