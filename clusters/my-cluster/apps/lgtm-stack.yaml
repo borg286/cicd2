@@ -94,6 +94,7 @@ spec:
   values:
     grafana:
       enabled: false
+      forceDeployDashboards: true
     prometheus:
       prometheusSpec:
         remoteWrite:
