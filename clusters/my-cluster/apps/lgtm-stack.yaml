@@ -129,7 +129,7 @@ spec:
           url: http://loki:3100
         - name: Prometheus
           type: prometheus
-          url: http://mimir-gateway.monitoring.svc:80
+          url: http://mimir-gateway.monitoring.svc:80/prometheus
           isDefault: true
         - name: Tempo
           type: tempo
