@@ -99,6 +99,8 @@ spec:
       prometheusSpec:
         remoteWrite:
           - url: "http://mimir-gateway.monitoring.svc:80/api/v1/push"
+            headers:
+              X-Scope-OrgID: anonymous
     defaultRules:
       enabled: true
     prometheus-node-exporter:
@@ -143,3 +145,17 @@ spec:
       dashboards:
         enabled: true
         searchNamespace: ALL
+        label: grafana_dashboard
+        labelValue: "1"
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'sidecar'
+          orgId: 1
+          folder: 'Kubernetes'
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/sidecar
