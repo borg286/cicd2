@@ -35,7 +35,7 @@ resource "gitea_repository" "mirror_repo" {
   name        = "cloned-repo"
   username    = gitea_org.my_org.name
   mirror      = true
-  clone_addr  = "https://github.com/borg286/cicd2.git"
+  mirror_address = "https://github.com/borg286/cicd2.git"
 }
 
 variable "flux_user_password" {
