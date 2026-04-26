@@ -12,6 +12,15 @@ spec:
   interval: 1h
   url: https://grafana.github.io/helm-charts
 ---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: prometheus-community
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://prometheus-community.github.io/helm-charts
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -71,6 +80,34 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  interval: 1h
+  values:
+    grafana:
+      enabled: false
+    prometheus:
+      prometheusSpec:
+        remoteWrite:
+          - url: "http://mimir-gateway.monitoring.svc:80/api/v1/push"
+    defaultRules:
+      enabled: true
+    prometheus-node-exporter:
+      enabled: true
+    kube-state-metrics:
+      enabled: true
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
   name: grafana
   namespace: monitoring
 spec:
@@ -92,7 +129,12 @@ spec:
           url: http://loki:3100
         - name: Prometheus
           type: prometheus
-          url: http://mimir-nginx.monitoring.svc:80
+          url: http://mimir-gateway.monitoring.svc:80
+          isDefault: true
         - name: Tempo
           type: tempo
           url: http://tempo:3100
+    sidecar:
+      dashboards:
+        enabled: true
+        searchNamespace: ALL
