@@ -21,10 +21,14 @@ variable "password" {
   sensitive = true
 }
 
-# Placeholder for users. Add a resource for each user like this:
-# resource "gitea_user" "user_name" {
-#   username   = "user_name"
-#   login_name = "user_name"
-#   email      = "user@example.com"
-#   password   = "some_initial_password" # Or use a variable
-# }
+variable "borg286_password" {
+  type      = string
+  sensitive = true
+}
+
+resource "gitea_user" "borg286" {
+  username   = "borg286"
+  login_name = "borg286"
+  email      = "borg286@gmail.com"
+  password   = var.borg286_password
+}

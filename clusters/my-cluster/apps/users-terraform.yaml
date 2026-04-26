@@ -16,3 +16,5 @@ spec:
       name: gitea-admin
     - kind: Secret
       name: gitea-flux-password
+    - kind: Secret
+      name: user-passwords
