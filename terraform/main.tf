@@ -2,7 +2,6 @@ terraform {
   required_providers {
     gitea = {
       source = "go-gitea/gitea"
-      version = "~> 0.7.0"
     }
   }
 }
@@ -35,7 +34,8 @@ resource "gitea_repository" "mirror_repo" {
   name        = "cloned-repo"
   username    = gitea_org.my_org.name
   mirror      = true
-  migrate_connect_addr = "https://github.com/borg286/cicd2.git"
+  migration_service = "github"
+  migration_clone_address = "https://github.com/borg286/cicd2.git"
 }
 
 variable "flux_user_password" {
