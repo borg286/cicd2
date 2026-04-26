@@ -27,8 +27,17 @@ variable "borg286_password" {
 }
 
 resource "gitea_user" "borg286" {
-  username   = "borg286"
-  login_name = "borg286"
-  email      = "borg286@gmail.com"
-  password   = var.borg286_password
+  username             = "borg286"
+  login_name           = "borg286"
+  email                = "borg286@gmail.com"
+  password             = var.borg286_password
+  must_change_password = false
+}
+
+resource "gitea_team" "devs" {
+  name         = "Devs"
+  organisation = "my-org"
+  description  = "Devs of my-org"
+  permission   = "write"
+  members      = [gitea_user.borg286.username]
 }
