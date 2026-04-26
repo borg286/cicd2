@@ -21,6 +21,13 @@ variable "password" {
   sensitive = true
 }
 
+resource "gitea_team" "devs" {
+  name         = "Devs"
+  organisation = "my-org"
+  description  = "Devs of my-org"
+  permission   = "write"
+}
+
 variable "borg286_password" {
   type      = string
   sensitive = true
@@ -32,13 +39,6 @@ resource "gitea_user" "borg286" {
   email                = "borg286@gmail.com"
   password             = var.borg286_password
   must_change_password = false
-}
-
-resource "gitea_team" "devs" {
-  name         = "Devs"
-  organisation = "my-org"
-  description  = "Devs of my-org"
-  permission   = "write"
 }
 
 resource "gitea_team_membership" "borg286_devs" {

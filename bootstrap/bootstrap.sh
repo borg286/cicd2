@@ -41,4 +41,5 @@ echo "Gitea Flux Password: $GITEA_FLUX_PASS"
 echo "Please save these credentials securely."
 
 kubectl apply -f https://github.com/fluxcd/flux2/releases/latest/download/install.yaml
-kubectl apply -f gotk-sync.yaml
+kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/gotk-sync.yaml
+kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/tf-controller-install.yaml
