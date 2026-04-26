@@ -40,3 +40,6 @@ echo "Forgejo Admin Password: $FORGEJO_ADMIN_PASS"
 echo "Gitea Admin Password: $GITEA_ADMIN_PASS"
 echo "Gitea Flux Password: $GITEA_FLUX_PASS"
 echo "Please save these credentials securely."
+
+kubectl apply -f https://github.com/fluxcd/flux2/releases/latest/download/install.yaml
+kubectl apply -f gotk-sync.yaml
