@@ -31,8 +31,7 @@ kubectl create secret generic gitea-admin \
 
 kubectl create secret generic gitea-flux-password \
   --namespace flux-system \
-  --from-literal=username=flux \
-  --from-literal=password="$GITEA_FLUX_PASS" \
+  --from-literal=flux_user_password="$GITEA_FLUX_PASS" \
   --dry-run=client -o yaml | kubectl apply -f -
 
 echo "Secrets created successfully."
