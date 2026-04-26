@@ -9,3 +9,5 @@ resources:
 - cockroach-operator-kustomization.yaml
 - cockroach-cluster-kustomization.yaml
 - cockroach-operator-gitrepo.yaml
+- atlas-operator-kustomization.yaml
+- myapp-kustomization.yaml

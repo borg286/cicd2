@@ -1,0 +1,17 @@
+apiVersion: db.atlasgo.io/v1alpha1
+kind: AtlasSchema
+metadata:
+  name: myapp-schema
+  namespace: cockroachdb-system
+spec:
+  urlFrom:
+    secretKeyRef:
+      name: atlas-db-credentials
+      key: url
+  schema:
+    sql: |
+      CREATE TABLE users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email STRING UNIQUE NOT NULL,
+        created_at TIMESTAMP DEFAULT now()
+      );
