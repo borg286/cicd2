@@ -1,16 +1,25 @@
-name: Test Private Pull
+name: Native Checkout
 on: [push, workflow_dispatch]
 
 jobs:
-  check-clone:
+  build:
     runs-on: bazel-heavy
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          # This uses the built-in token Forgejo creates for THIS job
-          token: ${{ secrets.GITHUB_TOKEN }} 
-      - name: Verify
+      - name: Manual Clone
         run: |
-          ls -R
-          echo "If I see files, the AI was overthinking it."
+          # Use the internal Forgejo URL and the automatic token
+          # This assumes your FORGEJO_URL is accessible from within the pod
+          git clone http://x-access-token:${{ secrets.GITHUB_TOKEN }}@forgejo-http.forgejo:3000/${{ github.repository }}.git .
+          
+      - name: List Binaries
+        run: |
+          echo "PATH: $PATH"
+          echo "Files in /usr/bin:"
+          ls -la /usr/bin
+          echo "Files in /usr/local/bin:"
+          ls -la /usr/local/bin
+          
+      - name: Verify Bazel
+        run: |
+          ls -la
+          bazel version
