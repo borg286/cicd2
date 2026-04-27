@@ -35,7 +35,7 @@ spec:
         args:
           - |
             TOKEN=$(wget -qO- --header="Authorization: token $ADMIN_TOKEN" \
-              $FORGEJO_URL/api/v1/admin/runners/registration-token | sed 's/.*"token":"\([^"]*\)".*/\1/')
+              $FORGEJO_URL/api/v1/admin/runners/registration-token | sed 's/.*"token":"\([^"]*\)".*/\1/' | tr -d '\r\n')
             
             echo "registration_token: $TOKEN" > /shared/registration.txt
         volumeMounts:
