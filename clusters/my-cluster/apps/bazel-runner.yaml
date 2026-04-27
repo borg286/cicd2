@@ -48,10 +48,14 @@ spec:
         args:
           - |
             REG_TOKEN=$(cat /shared/registration.txt | cut -d' ' -f2)
+            if [ -z "$REG_TOKEN" ]; then
+              echo "Error: Registration token is empty"
+              exit 1
+            fi
             /shared/act_runner register \
               --instance $FORGEJO_URL \
-              --token $REG_TOKEN \
-              --name $(hostname) \
+              --token "$REG_TOKEN" \
+              --name "$(hostname)" \
               --no-interactive;
             /shared/act_runner daemon
         lifecycle:
