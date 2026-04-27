@@ -1,0 +1,16 @@
+name: Test Private Pull
+on: [push, workflow_dispatch]
+
+jobs:
+  check-clone:
+    runs-on: bazel-heavy
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # This uses the built-in token Forgejo creates for THIS job
+          token: ${{ secrets.GITHUB_TOKEN }} 
+      - name: Verify
+        run: |
+          ls -R
+          echo "If I see files, the AI was overthinking it."
