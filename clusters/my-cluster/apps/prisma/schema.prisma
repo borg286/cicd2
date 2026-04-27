@@ -9,12 +9,18 @@ generator client {
 }
 
 model User {
-  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email String @unique
-  name  String?
+  id          String @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  region      String @default(dbgenerated("gateway_region()")) // Automatically assigns the region of the node handling the write
+  email       String @unique
+  name        String?
+
+  @@id([region, id]) // Composite primary key is standard for regional by row
 }
 
 model Talent {
-  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name  String?
+  id          String @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  region      String @default(dbgenerated("gateway_region()"))
+  name        String?
+
+  @@id([region, id])
 }
