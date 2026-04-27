@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bazel-runner
+  namespace: gitea
+spec:
+  replicas: 3
+  template:
+    spec:
+      serviceAccountName: gitea-runner-admin
+      initContainers:
+      - name: install-runner
+        image: gitea/act_runner:latest
+        command: ["cp", "/usr/local/bin/act_runner", "/shared/act_runner"]
+        volumeMounts:
+        - name: bin-dir
+          mountPath: /shared
+      containers:
+      - name: bazel-runtime
+        image: l.gcr.io/google/bazel:latest # Official Bazel Image
+        workingDir: /data
+        env:
+        - name: GITEA_INSTANCE_URL
+          value: "http://gitea-http.gitea.svc.cluster.local:3000"
+        - name: GITEA_RUNNER_REGISTRATION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: runner-secret
+              key: token
+        # Crucial: Tell the runner to run jobs directly on the "host" (this container)
+        # instead of trying to spawn new Docker containers.
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            /shared/act_runner register --no-interactive --instance $GITEA_INSTANCE_URL --token $GITEA_RUNNER_REGISTRATION_TOKEN;
+            /shared/act_runner daemon
+        volumeMounts:
+        - name: bin-dir
+          mountPath: /shared
+        - name: work-dir
+          mountPath: /data
+      volumes:
+      - name: bin-dir
+        emptyDir: {}
+      - name: work-dir
+        emptyDir: {}

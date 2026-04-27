@@ -1,0 +1,16 @@
+name: Administrative Ops
+on:
+  push:
+    branches:
+      - 'sudo'
+
+jobs:
+  cluster-management:
+    runs-on: k8s-admin
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply Cluster Changes
+        run: |
+          kubectl apply -f cluster/namespaces/
+          kubectl apply -f cluster/monitoring/
+          echo "Cluster state updated via sudo branch."

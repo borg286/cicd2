@@ -1,0 +1,21 @@
+name: Go Project CI
+on:
+  push:
+    paths:
+      - 'go/**'
+    branches-ignore:
+      - 'sudo'
+      - 'main'
+
+jobs:
+  bazel-build:
+    runs-on: bazel-heavy
+    steps:
+      - name: Incremental Checkout
+        uses: actions/checkout@v4
+        with:
+          clean: false # This prevents deleting the Bazel output symlinks
+      
+      - name: Bazel Version
+        run: |
+          bazel version

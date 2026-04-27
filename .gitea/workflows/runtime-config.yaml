@@ -1,0 +1,15 @@
+name: Global Runtime Config
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  update-redis:
+    runs-on: bazel-heavy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync Redis Config
+        run: |
+          # Script to push values from the repo into the global Redis DB
+          ./scripts/sync-redis.sh ./config/global-values.yaml
