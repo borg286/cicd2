@@ -44,6 +44,9 @@ spec:
       containers:
       - name: bazel-runtime
         image: l.gcr.io/google/bazel:latest
+        env:
+        - name: FORGEJO_URL
+          value: "http://forgejo-http.forgejo:3000"
         command: ["/bin/sh", "-c"]
         args:
           - |
