@@ -12,10 +12,11 @@ The setup implements a complete GitOps pipeline combining Infrastructure as Code
 ## 2. Bootstrapping Procedure
 To recreate or understand the setup, follow this procedure:
 
-*   **Manual Secrets:** Run the `create-secrets.sh` script in the `bootstrap` folder to create the necessary secrets manually in the cluster as prerequisites (never commit these to Git):
+*   **Manual Secrets:** Run the `bootstrap.sh` script in the `bootstrap` folder to create the necessary secrets in the cluster as prerequisites (never commit these to Git):
     *   `forgejo-admin` (in `forgejo` namespace): Initial admin credentials.
     *   `gitea-admin` (in `flux-system` namespace): Credentials for Tofu Controller to authenticate with Forgejo via Basic Auth.
     *   `gitea-flux-password` (in `flux-system` namespace): Password for the Flux user to be created in Gitea.
+    *   `forgejo-admin-token` (in `forgejo` namespace): Token with `write:admin` scope for JIT registration of runners. This must be created manually in the Forgejo UI after it is running and saved to the cluster using `kubectl`.
 *   **Flux Installation:** Use `flux bootstrap` (requires GitHub PAT with write access) or the "Dev install" path (`kubectl apply -f https://github.com/fluxcd/flux2/releases/latest/download/install.yaml` for read-only on public repos).
 *   **Manifest Application:** Apply the `gotk-sync.yaml` manifest found in the `bootstrap` folder to point Flux to the GitHub repo and start reconciliation.
     *   Command: `kubectl apply -f bootstrap/gotk-sync.yaml`
