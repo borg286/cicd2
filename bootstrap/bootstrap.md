@@ -21,6 +21,20 @@ To recreate or understand the setup, follow this procedure:
 *   **Manifest Application:** Apply the `gotk-sync.yaml` manifest found in the `bootstrap` folder to point Flux to the GitHub repo and start reconciliation.
     *   Command: `kubectl apply -f bootstrap/gotk-sync.yaml`
 *   **Cycle Breaking:** If Flux gets stuck on dry-run validation because a resource uses a CRD that is not yet installed by an operator in the same batch, manually apply the manifests in the `flux-system` folder using `kubectl apply -k` to unblock the loop.
+*   **Enable Actions via API:** To automate enabling Actions for the mirrored repository without hardcoding secrets, you can use this script. It polls until the repo is created by Terraform and then enables Actions:
+    ```bash
+    # Fetch admin password from cluster secret
+    ADMIN_PASSWORD=$(kubectl get secret forgejo-admin -n forgejo -o jsonpath='{.data.password}' | base64 --decode)
+
+    # Poll until repository is created
+    while ! curl -s -u "admin:\$ADMIN_PASSWORD" http://localhost:3000/api/v1/repos/my-org/cloned-repo > /dev/null; do
+      echo "Waiting for repository to be created..."
+      sleep 10
+    done
+
+    # Enable Actions via API
+    curl -X PATCH -u "admin:\$ADMIN_PASSWORD" -H "Content-Type: application/json" -d '{"has_actions": true}' http://localhost:3000/api/v1/repos/my-org/cloned-repo
+    ```
 
 ## 3. Validation Techniques
 To verify the state and debug issues:
