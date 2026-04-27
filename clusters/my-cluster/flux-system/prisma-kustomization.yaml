@@ -1,0 +1,18 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: db-schema
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./clusters/my-cluster/apps/prisma
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  healthChecks:
+    - apiVersion: crdb.cockroachlabs.com/v1alpha1
+      kind: CrdbCluster
+      name: cockroachdb
+      namespace: cockroachdb-system
+  force: true

@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: prisma-migrate
+  namespace: cockroachdb-system
+  annotations:
+    reconcile.fluxcd.io/requestedAt: "string-to-be-replaced-by-flux" 
+spec:
+  template:
+    spec:
+      containers:
+      - name: prisma
+        image: node:latest
+        command: ["sh", "-c", "cd /prisma && npx prisma db push --accept-data-loss"]
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://root@cockroachdb-public.cockroachdb-system:26257/defaultdb?sslmode=disable"
+        volumeMounts:
+        - name: schema-volume
+          mountPath: /prisma
+      volumes:
+      - name: schema-volume
+        configMap:
+          name: prisma-schema-files
+      restartPolicy: OnFailure
