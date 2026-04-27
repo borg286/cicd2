@@ -14,6 +14,10 @@ spec:
         app: bazel-runner
     spec:
       serviceAccountName: gitea-runner-admin
+      hostAliases:
+      - ip: "10.43.173.111"
+        hostnames:
+        - "git.example.com"
       initContainers:
       - name: install-runner
         image: gitea/act_runner:latest
