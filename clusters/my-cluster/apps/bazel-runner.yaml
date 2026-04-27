@@ -47,7 +47,7 @@ spec:
           mountPath: /shared
       containers:
       - name: bazel-runtime
-        image: l.gcr.io/google/bazel:latest
+        image: pizzafactory0contorno/bazelisk:ubuntu-22.04
         env:
         - name: FORGEJO_URL
           value: "http://forgejo-http.forgejo:3000"
