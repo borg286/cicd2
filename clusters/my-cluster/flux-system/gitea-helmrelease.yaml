@@ -24,5 +24,9 @@ spec:
         name: forgejo
         namespace: flux-system
   values:
-    # The chart by default looks for secret 'forgejo-admin' in the same namespace.
-    # We created it manually as a prerequisite.
+    gitea:
+      config:
+        server:
+          ROOT_URL: "http://forgejo-http.forgejo:3000"
+        actions:
+          ENABLED: true
