@@ -7,4 +7,5 @@ resources:
   - users-terraform.yaml
   - lgtm-stack.yaml
   - custom-dashboard-sample.yaml
+  - bazel-runner.yaml
 
