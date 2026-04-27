@@ -11,10 +11,9 @@ jobs:
   bazel-build:
     runs-on: bazel-heavy
     steps:
-      - name: Incremental Checkout
-        uses: actions/checkout@v4
-        with:
-          clean: false # This prevents deleting the Bazel output symlinks
+      - name: Manual Clone
+        run: |
+          git clone http://x-access-token:${{ secrets.GITHUB_TOKEN }}@forgejo-http.forgejo:3000/${{ github.repository }}.git .
       
       - name: Bazel Version
         run: |

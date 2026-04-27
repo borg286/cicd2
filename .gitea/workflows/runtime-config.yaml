@@ -8,7 +8,9 @@ jobs:
   update-redis:
     runs-on: bazel-heavy
     steps:
-      - uses: actions/checkout@v4
+      - name: Manual Clone
+        run: |
+          git clone http://x-access-token:${{ secrets.GITHUB_TOKEN }}@forgejo-http.forgejo:3000/${{ github.repository }}.git .
       - name: Bazel Version
         run: |
           bazel version
