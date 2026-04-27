@@ -51,7 +51,7 @@ spec:
             /shared/act_runner register \
               --instance $FORGEJO_URL \
               --token $REG_TOKEN \
-              --name $(HOSTNAME) \
+              --name $(hostname) \
               --no-interactive;
             /shared/act_runner daemon
         lifecycle:
