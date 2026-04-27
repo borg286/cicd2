@@ -59,6 +59,7 @@ spec:
               --instance $FORGEJO_URL \
               --token "$REG_TOKEN" \
               --name "$(hostname)" \
+              --labels "bazel-heavy:host,k8s-admin:host" \
               --no-interactive;
             /shared/act_runner daemon
         lifecycle:
