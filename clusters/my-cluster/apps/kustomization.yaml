@@ -8,4 +8,6 @@ resources:
   - lgtm-stack.yaml
   - custom-dashboard-sample.yaml
   - bazel-runner.yaml
+  - bazel-runner-sa.yaml
+  - forgejo-admin-token-secret.yaml
 
