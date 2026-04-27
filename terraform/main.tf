@@ -33,10 +33,21 @@ resource "gitea_org" "my_org" {
 resource "gitea_repository" "mirror_repo" {
   name        = "cloned-repo"
   username    = gitea_org.my_org.name
-  // make a one-time copy from github, then allow writes thereafter
-  mirror      = true
+  # Logic: Set mirror to false for a one-time clone/migration.
+  # If you set mirror = true, Gitea locks the repo to read-only sync, 
+  # which disables Actions and manual pushes.
+  mirror                  = false 
   migration_service       = "git"
   migration_clone_address = "https://github.com/borg286/cicd2.git"
+
+  # This prevents Terraform from seeing "drift" when Gitea clears 
+  # the migration address after the initial successful clone.
+  lifecycle {
+    ignore_changes = [
+      migration_service,
+      migration_clone_address,
+    ]
+  }
 }
 
 variable "flux_user_password" {
