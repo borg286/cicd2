@@ -5,7 +5,13 @@ metadata:
   namespace: gitea
 spec:
   replicas: 3
+  selector:
+    matchLabels:
+      app: bazel-runner
   template:
+    metadata:
+      labels:
+        app: bazel-runner
     spec:
       serviceAccountName: gitea-runner-admin
       initContainers:
