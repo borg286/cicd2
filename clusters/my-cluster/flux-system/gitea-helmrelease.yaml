@@ -31,4 +31,4 @@ spec:
         actions:
           ENABLED: true
       admin:
-        username: admin
+        username: gitea_admin
