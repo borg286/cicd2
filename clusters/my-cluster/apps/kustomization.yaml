@@ -9,4 +9,5 @@ resources:
   - custom-dashboard-sample.yaml
   - bazel-runner.yaml
   - bazel-runner-sa.yaml
+  - nativelink.yaml
 

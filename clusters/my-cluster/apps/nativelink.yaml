@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nativelink
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: nativelink
+  namespace: flux-system
+spec:
+  interval: 1h
+  type: oci
+  url: oci://public.ecr.aws/b1l4l6w7/tracemachina/nativelink
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nativelink
+  namespace: nativelink
+spec:
+  releaseName: nativelink
+  chart:
+    spec:
+      chart: nativelink
+      version: 1.0.0-rc1
+      sourceRef:
+        kind: HelmRepository
+        name: nativelink
+        namespace: flux-system
+  interval: 1h
+  values:
+    cas:
+      cloudProvider: "filesystem"
+      persistentVolume:
+        enabled: true
+        size: 20Gi
+    rbe:
+      enabled: true
+    workers:
+      specs:
+      - name: worker-1
+        replicas: 1
+        podImage: "l.gcr.io/google/bazel:latest" # Example toolchain image
+        platformProperties:
+          osFamily: "Linux"
+          ISA: "x86-64"
