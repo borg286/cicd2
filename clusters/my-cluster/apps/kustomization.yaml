@@ -11,4 +11,5 @@ resources:
   - bazel-runner-sa.yaml
   - nativelink.yaml
   - zot.yaml
+  - forgejo-admin-setup.yaml
 

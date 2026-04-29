@@ -26,6 +26,11 @@ resource "gitea_token" "tofu_managed_token" {
   scopes = ["all"]
 }
 
+output "token" {
+  value     = gitea_token.tofu_managed_token.token
+  sensitive = true
+}
+
 resource "gitea_org" "my_org" {
   name = "my-org"
 }

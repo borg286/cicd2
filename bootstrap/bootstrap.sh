@@ -13,7 +13,6 @@ kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f
 
 # Generate passwords
 FORGEJO_ADMIN_PASS=$(generate_password)
-GITEA_ADMIN_PASS=$(generate_password)
 GITEA_FLUX_PASS=$(generate_password)
 
 # Create secrets
@@ -26,7 +25,7 @@ kubectl create secret generic forgejo-admin \
 kubectl create secret generic gitea-admin \
   --namespace flux-system \
   --from-literal=username=admin \
-  --from-literal=password="$GITEA_ADMIN_PASS" \
+  --from-literal=password="$FORGEJO_ADMIN_PASS" \
   --dry-run=client -o yaml | kubectl apply -f -
 
 kubectl create secret generic gitea-flux-password \
@@ -34,9 +33,13 @@ kubectl create secret generic gitea-flux-password \
   --from-literal=flux_user_password="$GITEA_FLUX_PASS" \
   --dry-run=client -o yaml | kubectl apply -f -
 
+kubectl create secret generic gitea-flux-password \
+  --namespace forgejo \
+  --from-literal=flux_user_password="$GITEA_FLUX_PASS" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
 echo "Secrets created successfully."
-echo "Forgejo Admin Password: $FORGEJO_ADMIN_PASS"
-echo "Gitea Admin Password: $GITEA_ADMIN_PASS"
+echo "Forgejo/Gitea Admin Password: $FORGEJO_ADMIN_PASS"
 echo "Gitea Flux Password: $GITEA_FLUX_PASS"
 echo "Please save these credentials securely."
 

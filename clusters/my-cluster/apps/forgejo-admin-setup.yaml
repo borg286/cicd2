@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: forgejo-admin-setup
+  namespace: forgejo
+spec:
+  template:
+    spec:
+      containers:
+      - name: setup
+        image: code.forgejo.org/forgejo/forgejo:15.0.0-rootless
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          set -e
+          # Wait for Forgejo to be ready
+          until wget -qO- http://forgejo-http:3000/ > /dev/null; do
+            echo "Waiting for Forgejo to be ready..."
+            sleep 5
+          done
+          
+          # Check if admin user exists. 
+          # We use 'forgejo admin user list' which might need a config file.
+          # Forgejo rootless uses /etc/forgejo/app.ini by default but it might be elsewhere.
+          # Let's try without explicit config first.
+          if /usr/local/bin/forgejo admin user list | grep -q "^admin "; then
+            echo "Admin user already exists."
+          else
+            echo "Creating admin user..."
+            /usr/local/bin/forgejo admin user create --username admin --password "$ADMIN_PASSWORD" --email admin@example.com --admin --must-change-password=false
+          fi
+        env:
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: forgejo-admin
+              key: password
+      restartPolicy: OnFailure

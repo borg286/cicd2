@@ -30,3 +30,5 @@ spec:
           ROOT_URL: "http://forgejo-http.forgejo:3000"
         actions:
           ENABLED: true
+      admin:
+        username: admin
