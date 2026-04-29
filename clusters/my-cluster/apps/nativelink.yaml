@@ -36,17 +36,29 @@ spec:
       persistentVolume:
         enabled: true
         size: 20Gi
-    rbe:
-      enabled: true
+      rbe:
+        enabled: true
+        defaultCpuCount: "1000"
     workers:
       enabled: true
       specs:
       - name: worker-1
         replicas: 1
-        podImage: "l.gcr.io/google/bazel:latest"
+        podImage: "buildpack-deps:bookworm"
+        configMapName: default-worker-config
         platformProperties:
-          osFamily: "Linux"
+          containerImage: "buildpack-deps:bookworm"
+          osFamily: Linux
           ISA: "x86-64"
+          cpuCount: 1000
+          memoryKb: 1000000
+        resources:
+          requests:
+            cpu: "1"
+            memory: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
     redis:
       enabled: true
       image:
@@ -57,4 +69,3 @@ spec:
         enabled: false
       metrics:
         enabled: false
-    # workerProvisioner seems to be able to do auto-scaling. Slick!
