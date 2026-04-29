@@ -3,6 +3,9 @@ terraform {
     gitea = {
       source = "go-gitea/gitea"
     }
+    terracurl = {
+      source = "devops-rob/terracurl"
+    }
   }
 }
 
@@ -69,10 +72,22 @@ resource "gitea_user" "flux_user" {
 
 resource "gitea_token" "runner_registration" {
   name   = "runner-auth-token"
-  scopes = ["all"] # Use 'all' to ensure registration capability
+  scopes = ["all"] # Admin-scoped PAT to allow fetching the system token
+}
+
+resource "terracurl_request" "runner_registration_token" {
+  name   = "runner_registration_token"
+  url    = "http://forgejo-http.forgejo:3000/api/v1/admin/runners/registration-token"
+  method = "GET"
+
+  headers = {
+    Authorization = "token ${gitea_token.runner_registration.token}"
+  }
+
+  response_codes = [200]
 }
 
 output "RUNNER_REGISTRATION_TOKEN" {
-  value     = gitea_token.runner_registration.token
+  value     = jsondecode(terracurl_request.runner_registration_token.response).token
   sensitive = true
 }
