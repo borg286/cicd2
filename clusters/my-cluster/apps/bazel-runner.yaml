@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bazel-runner
-  namespace: forgejo
+  namespace: flux-system
 spec:
   replicas: 3
   selector:

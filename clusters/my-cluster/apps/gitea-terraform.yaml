@@ -2,7 +2,7 @@ apiVersion: infra.contrib.fluxcd.io/v1alpha1
 kind: Terraform
 metadata:
   name: gitea-resources
-  namespace: forgejo
+  namespace: flux-system
 spec:
   interval: 5m
   approvePlan: "auto"
@@ -13,7 +13,7 @@ spec:
     namespace: flux-system
   varsFrom:
     - kind: Secret
-      name: forgejo-admin
+      name: gitea-admin
     - kind: Secret
       name: gitea-flux-password
   writeOutputsToSecret:
