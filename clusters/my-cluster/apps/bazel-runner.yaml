@@ -18,6 +18,13 @@ spec:
       - ip: "10.43.173.111"
         hostnames:
         - "git.example.com"
+      initContainers:
+      - name: install-runner
+        image: gitea/act_runner:latest
+        command: ["cp", "/usr/local/bin/act_runner", "/shared/act_runner"]
+        volumeMounts:
+        - name: shared-vol
+          mountPath: /shared
       containers:
       - name: bazel-runtime
         image: pizzafactory0contorno/bazelisk:ubuntu-22.04
@@ -41,27 +48,24 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - |
-            # Copying act_runner from the image to a shared path if needed, 
-            # but here we assume we might need it for persistence or unregistration.
-            # However, let's see if we can just use it directly from a known location.
-            # For now, I'll keep the 'cp' logic but simplified into the main container 
-            # or just assume it's in the PATH if the image has it.
-            # The user's suggestion used 'act_runner' directly.
-            
-            act_runner register \
+            /shared/act_runner register \
               --instance "$FORGEJO_URL" \
               --token "$GITEA_RUNNER_REGISTRATION_TOKEN" \
               --name "$(hostname)" \
               --labels "bazel-heavy:host,k8s-admin:host" \
               --no-interactive;
-            act_runner daemon
+            /shared/act_runner daemon
         lifecycle:
           preStop:
             exec:
-              command: ["act_runner", "unregister"]
+              command: ["/shared/act_runner", "unregister"]
         volumeMounts:
+        - name: shared-vol
+          mountPath: /shared
         - name: work-dir
           mountPath: /data
       volumes:
+      - name: shared-vol
+        emptyDir: {}
       - name: work-dir
         emptyDir: {}
