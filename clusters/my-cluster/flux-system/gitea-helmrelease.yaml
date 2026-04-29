@@ -32,3 +32,4 @@ spec:
           ENABLED: true
       admin:
         username: gitea_admin
+        passwordMode: keepUpdated
