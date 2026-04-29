@@ -47,4 +47,6 @@ spec:
         platformProperties:
           osFamily: "Linux"
           ISA: "x86-64"
+    redis:
+      enabled: true
     # workerProvisioner seems to be able to do auto-scaling. Slick!
