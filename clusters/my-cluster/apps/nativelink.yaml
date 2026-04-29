@@ -59,6 +59,8 @@ spec:
           limits:
             cpu: "1"
             memory: "1Gi"
+        hpa:
+          enabled: false
     redis:
       enabled: true
       image:
