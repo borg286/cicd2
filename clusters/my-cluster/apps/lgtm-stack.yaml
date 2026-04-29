@@ -76,6 +76,15 @@ spec:
         name: grafana
         namespace: flux-system
   interval: 1h
+  values:
+    kafka:
+      enabled: true
+      persistence:
+        size: 5Gi
+      extraConfig: |
+        log.retention.bytes=4294967296
+        log.retention.hours=12
+        log.segment.bytes=536870912
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease

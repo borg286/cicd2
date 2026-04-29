@@ -51,6 +51,15 @@ spec:
         env:
         - name: FORGEJO_URL
           value: "http://forgejo-http.forgejo:3000"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+            ephemeral-storage: 1Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
+            ephemeral-storage: 10Gi
         command: ["/bin/sh", "-c"]
         args:
           - |
