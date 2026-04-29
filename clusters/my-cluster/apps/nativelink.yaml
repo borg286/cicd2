@@ -38,6 +38,8 @@ spec:
         size: 20Gi
     rbe:
       enabled: true
+    scheduler:
+      enabled: true
     workers:
       enabled: true
       specs:
@@ -47,3 +49,4 @@ spec:
         platformProperties:
           osFamily: "Linux"
           ISA: "x86-64"
+    # workerProvisioner seems to be able to do auto-scaling. Slick!
