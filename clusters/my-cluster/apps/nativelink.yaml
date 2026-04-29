@@ -38,8 +38,6 @@ spec:
         size: 20Gi
     rbe:
       enabled: true
-    scheduler:
-      enabled: true
     workers:
       enabled: true
       specs:
