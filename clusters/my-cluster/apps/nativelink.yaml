@@ -36,8 +36,6 @@ spec:
       persistentVolume:
         enabled: true
         size: 20Gi
-      rbe:
-        enabled: true
     rbe:
       enabled: true
     workers:
@@ -54,9 +52,11 @@ spec:
       sentinel:
         enabled: true
         image:
+          repository: bitnami/redis-sentinel
           tag: 7.2.4-debian-12-r10
       metrics:
         enabled: true
         image:
+          repository: bitnami/redis-exporter
           tag: 1.58.0-debian-12-r8
     # workerProvisioner seems to be able to do auto-scaling. Slick!
