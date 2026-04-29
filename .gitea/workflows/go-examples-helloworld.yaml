@@ -3,9 +3,6 @@ on:
   push:
     paths:
       - 'go/**'
-    branches-ignore:
-      - 'sudo'
-      - 'main'
 
 jobs:
   bazel-build:
