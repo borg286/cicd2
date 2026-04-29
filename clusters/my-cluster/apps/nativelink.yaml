@@ -31,6 +31,7 @@ spec:
   interval: 1h
   values:
     cas:
+      enabled: true
       cloudProvider: "filesystem"
       persistentVolume:
         enabled: true
@@ -38,10 +39,11 @@ spec:
     rbe:
       enabled: true
     workers:
+      enabled: true
       specs:
       - name: worker-1
         replicas: 1
-        podImage: "l.gcr.io/google/bazel:latest" # Example toolchain image
+        podImage: "l.gcr.io/google/bazel:latest"
         platformProperties:
           osFamily: "Linux"
           ISA: "x86-64"
