@@ -69,7 +69,7 @@ resource "gitea_user" "flux_user" {
 
 resource "gitea_token" "runner_registration" {
   name   = "runner-auth-token"
-  scopes = ["admin:runner"] # Scope required for registration
+  scopes = ["all"] # Use 'all' to ensure registration capability
 }
 
 output "RUNNER_REGISTRATION_TOKEN" {
