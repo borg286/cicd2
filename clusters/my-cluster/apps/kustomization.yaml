@@ -5,6 +5,7 @@ resources:
   - minio.yaml
   - spark-hello-world.yaml
   - users-terraform.yaml
+  - users-manifests.yaml
   - lgtm-stack.yaml
   - custom-dashboard-sample.yaml
   - bazel-runner.yaml

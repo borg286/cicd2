@@ -3,6 +3,9 @@ terraform {
     gitea = {
       source = "go-gitea/gitea"
     }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
   }
 }
 
@@ -44,4 +47,32 @@ resource "gitea_user" "borg286" {
 resource "gitea_team_membership" "borg286_devs" {
   team_id  = gitea_team.devs.id
   username = gitea_user.borg286.username
+}
+
+provider "gitea" {
+  alias    = "borg286"
+  base_url = "http://forgejo-http.forgejo:3000"
+  username = gitea_user.borg286.username
+  password = var.borg286_password
+}
+
+resource "gitea_token" "borg286_token" {
+  provider = gitea.borg286
+  name     = "code-server-token"
+  scopes   = ["all"]
+}
+
+provider "kubernetes" {
+  # Assumes running in-cluster or with access to default kubeconfig
+}
+
+resource "kubernetes_secret" "borg286_git_credentials" {
+  metadata {
+    name      = "git-credentials"
+    namespace = "borg286"
+  }
+
+  data = {
+    token = gitea_token.borg286_token.token
+  }
 }
