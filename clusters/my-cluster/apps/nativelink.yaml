@@ -3,7 +3,7 @@ kind: Namespace
 metadata:
   name: nativelink
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: nativelink
@@ -13,7 +13,7 @@ spec:
   type: oci
   url: oci://public.ecr.aws/b1l4l6w7/tracemachina/nativelink
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: nativelink
