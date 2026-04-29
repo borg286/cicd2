@@ -29,3 +29,10 @@ oci_image(
     tars = [":app_layer"],
     entrypoint = ["/usr/local/bin/helloworld"],
 )
+
+oci_push(
+    name = "push_oci",
+    image = ":image",
+    registry = "oci://zot-registry.zot-system.svc.cluster.local:5000",
+    repository = "go/examples/helloworld",
+)
