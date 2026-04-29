@@ -4,7 +4,7 @@ metadata:
   name: gitea-resources
   namespace: flux-system
 spec:
-  alwaysCleanupRunnerPod: false
+  alwaysCleanupRunnerPod: true
   interval: 5m
   approvePlan: "auto"
   path: ./terraform
