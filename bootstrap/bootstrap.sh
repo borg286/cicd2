@@ -40,6 +40,21 @@ echo "Gitea Admin Password: $GITEA_ADMIN_PASS"
 echo "Gitea Flux Password: $GITEA_FLUX_PASS"
 echo "Please save these credentials securely."
 
+# Apply Flux and components
 kubectl apply -f https://github.com/fluxcd/flux2/releases/latest/download/install.yaml
-kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/gotk-sync.yaml
-kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/tf-controller-install.yaml
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [ -f "$SCRIPT_DIR/gotk-sync.yaml" ]; then
+  echo "Applying local gotk-sync.yaml..."
+  kubectl apply -f "$SCRIPT_DIR/gotk-sync.yaml"
+else
+  kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/gotk-sync.yaml
+fi
+
+if [ -f "$SCRIPT_DIR/tf-controller-install.yaml" ]; then
+  echo "Applying local tf-controller-install.yaml..."
+  kubectl apply -f "$SCRIPT_DIR/tf-controller-install.yaml"
+else
+  kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/tf-controller-install.yaml
+fi

@@ -10,4 +10,5 @@ resources:
   - bazel-runner.yaml
   - bazel-runner-sa.yaml
   - nativelink.yaml
+  - zot.yaml
 
