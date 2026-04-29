@@ -66,3 +66,13 @@ resource "gitea_user" "flux_user" {
   email      = "flux@example.com"
   password   = var.flux_user_password
 }
+
+resource "gitea_token" "runner_registration" {
+  name   = "runner-auth-token"
+  scopes = ["admin:runner"] # Scope required for registration
+}
+
+output "RUNNER_REGISTRATION_TOKEN" {
+  value     = gitea_token.runner_registration.token
+  sensitive = true
+}
