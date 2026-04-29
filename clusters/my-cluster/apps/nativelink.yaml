@@ -36,8 +36,8 @@ spec:
       persistentVolume:
         enabled: true
         size: 20Gi
-      rbe:
-        enabled: true
+    rbe:
+      enabled: true
     workers:
       enabled: true
       specs:
