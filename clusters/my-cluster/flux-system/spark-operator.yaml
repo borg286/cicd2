@@ -21,5 +21,4 @@ spec:
         kind: HelmRepository
         name: spark-operator
         namespace: flux-system
-  wait: true
   values: {}
