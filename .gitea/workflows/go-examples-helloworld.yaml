@@ -17,4 +17,4 @@ jobs:
       
       - name: Bazel Version
         run: |
-          bazel version
+          bazel build //go/examples/helloword
