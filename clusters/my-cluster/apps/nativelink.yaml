@@ -11,7 +11,7 @@ metadata:
 spec:
   interval: 1h
   type: oci
-  url: oci://public.ecr.aws/b1l4l6w7/tracemachina/nativelink
+  url: oci://public.ecr.aws/b1l4l6w7/tracemachina
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
