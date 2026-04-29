@@ -2,7 +2,8 @@ name: Go Project CI
 on:
   push:
     paths:
-      - 'go/**'
+      - 'go/examples/helloworld/**'
+      - '.gitea/workflows/go-examples-helloworld.yaml'
 
 jobs:
   bazel-build:
