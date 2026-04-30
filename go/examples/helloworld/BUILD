@@ -43,10 +43,10 @@ helm_chart(
     templates = glob(["templates/**"]),
     images = ["//go/examples/helloworld:push_oci"], 
     registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
-    stamp = 1,
-    env = {
-        "HELM_EXPERIMENTAL_OCI": "1",
-        "INSECURE_REGISTRY_URLS": "zot-registry.zot-system.svc.cluster.local:5000",
-    },
-    opts = ["--plain-http"],
+    #stamp = 1,
+    #env = {
+    #    "HELM_EXPERIMENTAL_OCI": "1",
+    #    "INSECURE_REGISTRY_URLS": "zot-registry.zot-system.svc.cluster.local:5000",
+    #},
+    push_opts = ["--plain-http"],
 )
