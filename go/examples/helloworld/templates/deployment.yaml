@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld
+  template:
+    metadata:
+      # This forces a Pod restart if the ConfigMap content changes
+      checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: {{ index .Values.oci_images "@@//go/examples/helloworld:push_oci" }}
+        ports:
+        - containerPort: 8080
