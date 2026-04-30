@@ -29,6 +29,7 @@ spec:
   interval: 1h
   type: oci
   url: oci://zot-registry.zot-system.svc.cluster.local:5000/charts
+  insecure: true
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
