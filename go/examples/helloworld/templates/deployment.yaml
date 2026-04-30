@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
       - name: helloworld
-        image: {{ index .Values.oci_images "@@//go/examples/helloworld:push_oci" }}
+        image: {{ .Values.image }}
+
         ports:
         - containerPort: 8080

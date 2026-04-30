@@ -1,4 +1,3 @@
-# values.yaml
-# The oci_images dictionary is injected dynamically by Bazel
+
 oci_images:
-  "@@//go/examples/helloworld:push_oci": ""
+  "@@//go/examples/helloworld:push_oci": "@@//go/examples/helloworld:push_oci"
