@@ -51,4 +51,5 @@ helm_push(
     package = ":helloworld_chart",
     include_images = True,
     registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
+    opts = ["--insecure"],
 )
