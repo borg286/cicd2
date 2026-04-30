@@ -1,11 +1,11 @@
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageRepository
 metadata:
-  name: helloworld-chart
+  name: helloworld
   namespace: flux-system
 spec:
   # Note: Flux tracks the OCI repository, not the Helm index
-  image: zot-registry.zot-system.svc.cluster.local:5000/charts/helloworld-chart
+  image: zot-registry.zot-system.svc.cluster.local:5000/charts/helloworld
   interval: 1m
   insecure: true
 ---
@@ -16,7 +16,7 @@ metadata:
   namespace: flux-system
 spec:
   imageRepositoryRef:
-    name: helloworld-chart
+    name: helloworld
   policy:
     numerical:
       order: asc # Picks the highest Unix timestamp
@@ -41,7 +41,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      chart: helloworld-chart
+      chart: helloworld
       # Flux replaces 'latest' with the actual digest (e.g., sha256:abcd...)
       # The setter below tells Flux to use the 'digest' property from the policy
       version: "latest" # {"$imagepolicy": "flux-system:helloworld-latest:digest"}
