@@ -15,7 +15,8 @@ spec:
     - name: http
       port: 5000
       targetPort: 5000
-  type: ClusterIP
+      nodePort: 30500
+  type: NodePort
 ---
 apiVersion: v1
 kind: ConfigMap

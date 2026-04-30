@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   # Note: Flux tracks the OCI repository, not the Helm index
-  image: zot-registry.zot-system.svc.cluster.local:5000/charts/helloworld
+  image: 172.19.0.2:30500/charts/helloworld
   interval: 1m
   insecure: true
 ---
@@ -29,7 +29,7 @@ metadata:
 spec:
   interval: 1h
   type: oci
-  url: oci://zot-registry.zot-system.svc.cluster.local:5000/charts
+  url: oci://172.19.0.2:30500/charts
   insecure: true
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
