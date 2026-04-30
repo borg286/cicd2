@@ -51,5 +51,10 @@ helm_push(
     package = ":helloworld_chart",
     include_images = True,
     registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
-    opts = ["--insecure"],
+    env = {
+        "HELM_EXPERIMENTAL_OCI": "1",
+        # For OCI image pushers (if using skopeo or similar)
+        "INSECURE_REGISTRY_URLS": "zot-registry.zot-system.svc.cluster.local:5000",
+    },
+    opts = ["--plain-http"],
 )
