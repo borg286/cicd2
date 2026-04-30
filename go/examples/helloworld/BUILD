@@ -40,7 +40,7 @@ load("@rules_helm//helm:defs.bzl", "helm_chart", "helm_push")
 helm_chart(
     name = "helloworld_chart",
     chart = "Chart.yaml",
-    values = "templates/values.yaml",
+    values = "values.yaml",
     templates = glob(["templates/**"]),
     images = ["//go/examples/helloworld:push_oci"], 
     registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
