@@ -38,7 +38,7 @@ spec:
         name: zot-charts
       interval: 1m
 ---
-apiVersion: image.toolkit.fluxcd.io/v1beta1
+apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageUpdateAutomation
 metadata:
   name: helloworld-updates
