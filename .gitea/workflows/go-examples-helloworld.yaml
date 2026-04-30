@@ -13,8 +13,16 @@ jobs:
       - name: Manual Clone
         run: |
           git clone http://x-access-token:${{ secrets.GITHUB_TOKEN }}@forgejo-http.forgejo:3000/${{ github.repository }}.git .
-      
-      - name: Bazel Run Push
+      - name: Check Bazel Server Status
         run: |
-          bazel build //go/examples/helloworld:helloworld_chart.push
-          bazel run //go/examples/helloworld:helloworld_chart.push
+          echo "=== Checking Bazel processes ==="
+          ps aux | grep -E "[b]azel|[a]ct_runner" || echo "No Bazel processes found"
+          
+          echo "=== Checking Bazel server socket ==="
+          ls -la ~/.cache/bazel/_bazel_*/*/server/ 2>/dev/null || echo "No server sockets found"
+          
+          echo "=== Disk and memory ==="
+          df -h
+          free -h
+      - name: Bazel Run Push
+        run: sh go/examples/helloworld/build-test-push.sh
