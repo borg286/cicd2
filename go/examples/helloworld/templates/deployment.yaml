@@ -9,8 +9,9 @@ spec:
       app: helloworld
   template:
     metadata:
-      # This forces a Pod restart if the ConfigMap content changes
-      checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      annotations:
+        # This forces a Pod restart if the ConfigMap content changes
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         app: helloworld
     spec:

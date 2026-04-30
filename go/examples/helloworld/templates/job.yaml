@@ -5,9 +5,9 @@ metadata:
 spec:
   template:
     spec:
+      restartPolicy: OnFailure
       containers:
         - name: helloworld
           # Format: [repository]@[digest]
           # .Values.oci_images.[target_name] is the standard path rules_helm uses
           image: {{ index .Values.oci_images "@@//go/examples/helloworld:push_oci" }}
-          restartPolicy: OnFailure

@@ -1,4 +1,4 @@
 # values.yaml
 # The oci_images dictionary is injected dynamically by Bazel
 oci_images:
-  "@@//go/examples/helloworld:push_oci": ""
+  "@@//go/examples/helloworld:push_oci": "zot-registry.zot-system.svc.cluster.local:5000/go/examples/helloworld@sha256:91b1d907f7b6ab8897a0e660ab979a6d26a31244fea6b90563ca489c5520b06e"
