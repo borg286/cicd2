@@ -7,6 +7,7 @@ spec:
   # Note: Flux tracks the OCI repository, not the Helm index
   image: zot-registry.zot-system.svc.cluster.local:5000/charts/helloworld-chart
   interval: 1m
+  insecure: true
 ---
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImagePolicy
