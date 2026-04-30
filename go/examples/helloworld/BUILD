@@ -44,7 +44,7 @@ helm_chart(
     templates = glob(["templates/**"]),
     images = ["//go/examples/helloworld:push_oci"], 
     registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
-    stamp = True,
+    stamp = 1,
 )
 
 helm_push(
@@ -56,6 +56,5 @@ helm_push(
         "HELM_EXPERIMENTAL_OCI": "1",
         "INSECURE_REGISTRY_URLS": "zot-registry.zot-system.svc.cluster.local:5000",
     },
-    tag = "{VOLATILE_BUILD_TIME}",  # Should not bust cache
     opts = ["--plain-http"],
 )
