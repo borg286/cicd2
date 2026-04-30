@@ -12,5 +12,5 @@ resources:
   - bazel-runner-sa.yaml
   - nativelink.yaml
   - zot.yaml
-  - internal-charts/go-helloworld/helloworld.yaml
+  #- internal-charts/go-helloworld/helloworld.yaml
 

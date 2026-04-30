@@ -4,7 +4,7 @@ metadata:
   name: bazel-runner
   namespace: flux-system
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: bazel-runner
