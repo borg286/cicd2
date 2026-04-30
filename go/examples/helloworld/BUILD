@@ -33,7 +33,7 @@ oci_image(
 oci_push(
     name = "push_oci",
     image = ":image",
-    repository = "http://zot-registry.zot-system.svc.cluster.local:5000/go/examples/helloworld",
+    repository = "zot-registry.zot-system.svc.cluster.local:5000/go/examples/helloworld",
 )
 load("@rules_helm//helm:defs.bzl", "helm_chart", "helm_push")
 

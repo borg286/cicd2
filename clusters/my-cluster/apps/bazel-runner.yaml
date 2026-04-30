@@ -1,9 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: bazel-runner
   namespace: flux-system
 spec:
+  serviceName: "bazel-runner"
   replicas: 3
   selector:
     matchLabels:
@@ -54,6 +55,22 @@ spec:
               --name "$(hostname)" \
               --labels "bazel-heavy:host,k8s-admin:host" \
               --no-interactive;
+            
+            # Optimize clone
+            REPO_DIR="/data/my-org/cloned-repo"
+            REPO_URL="http://forgejo-http.forgejo:3000/my-org/cloned-repo.git"
+            
+            mkdir -p "/data/my-org"
+            if [ ! -d "$REPO_DIR/.git" ]; then
+              echo "Cloning repo..."
+              git clone "$REPO_URL" "$REPO_DIR"
+            else
+              echo "Fetching repo..."
+              cd "$REPO_DIR"
+              git fetch
+              git checkout main
+            fi
+            
             /shared/act_runner daemon
         lifecycle:
           preStop:
@@ -67,5 +84,11 @@ spec:
       volumes:
       - name: shared-vol
         emptyDir: {}
-      - name: work-dir
-        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: work-dir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
