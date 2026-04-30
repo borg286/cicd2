@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: bazel-runner
   namespace: flux-system
@@ -41,11 +41,11 @@ spec:
           requests:
             cpu: 500m
             memory: 4Gi
-            ephemeral-storage: 1Gi
+            ephemeral-storage: 10Gi
           limits:
             cpu: 2
             memory: 8Gi
-            ephemeral-storage: 10Gi
+            ephemeral-storage: 20Gi
         command: ["/bin/sh", "-c"]
         args:
           - |
@@ -79,16 +79,6 @@ spec:
         volumeMounts:
         - name: shared-vol
           mountPath: /shared
-        - name: work-dir
-          mountPath: /data
       volumes:
       - name: shared-vol
         emptyDir: {}
-  volumeClaimTemplates:
-  - metadata:
-      name: work-dir
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 10Gi
