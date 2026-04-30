@@ -4,7 +4,6 @@ metadata:
   name: bazel-runner
   namespace: flux-system
 spec:
-  serviceName: "bazel-runner"
   replicas: 3
   selector:
     matchLabels:
@@ -57,10 +56,10 @@ spec:
               --no-interactive;
             
             # Optimize clone
-            REPO_DIR="/data/my-org/cloned-repo"
+            REPO_DIR="/tmp/my-org/cloned-repo"
             REPO_URL="http://forgejo-http.forgejo:3000/my-org/cloned-repo.git"
             
-            mkdir -p "/data/my-org"
+            mkdir -p "/tmp/my-org"
             if [ ! -d "$REPO_DIR/.git" ]; then
               echo "Cloning repo..."
               git clone "$REPO_URL" "$REPO_DIR"
