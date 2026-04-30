@@ -14,7 +14,5 @@ jobs:
         run: |
           git clone http://x-access-token:${{ secrets.GITHUB_TOKEN }}@forgejo-http.forgejo:3000/${{ github.repository }}.git .
       
-      - name: Bazel Version
-        run: |
-          bazel build //go/examples/helloworld:image
-          bazel run //go/examples/helloworld:helloworld_push
+      - name: Bazel Run Push
+        run: bazel run //go/examples/helloworld:helloworld_push
