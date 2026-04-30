@@ -2,3 +2,4 @@ build --remote_cache=grpc://nativelink-cas.nativelink.svc.cluster.local:50051
 build --remote_executor=grpc://nativelink-cas.nativelink.svc.cluster.local:50051
 build --remote_local_fallback
 build --remote_download_outputs=toplevel
+startup --max_idle_secs=3000
