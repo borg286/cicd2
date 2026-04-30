@@ -16,4 +16,4 @@ jobs:
       - name: Bazel Version
         run: |
           bazel build //go/examples/helloworld:image
-          bazel run //go/examples/helloworld:helloworld_chart
+          bazel run //go/examples/helloworld:helloworld_push

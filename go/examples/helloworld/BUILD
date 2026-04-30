@@ -35,7 +35,7 @@ oci_push(
     image = ":image",
     repository = "zot-registry.zot-system.svc.cluster.local:5000/go/examples/helloworld",
 )
-load("@rules_helm//helm:defs.bzl", "helm_chart")
+load("@rules_helm//helm:defs.bzl", "helm_chart", "helm_push")
 
 helm_chart(
     name = "helloworld_chart",
@@ -43,5 +43,12 @@ helm_chart(
     values = "templates/values.yaml",
     templates = glob(["templates/**"]),
     images = ["//go/examples/helloworld:push_oci"], 
+    registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
+)
+
+helm_push(
+    name = "helloworld_push",
+    package = ":helloworld_chart",
+    include_images = True,
     registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
 )
