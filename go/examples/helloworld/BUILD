@@ -44,7 +44,7 @@ helm_chart(
     images = ["//go/examples/helloworld:push_oci"], 
     registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
     #stamp = 1,
-    #env = {
+    #env = { 
     #    "HELM_EXPERIMENTAL_OCI": "1",
     #    "INSECURE_REGISTRY_URLS": "zot-registry.zot-system.svc.cluster.local:5000",
     #},
