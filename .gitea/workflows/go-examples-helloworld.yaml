@@ -1,3 +1,4 @@
+# Trigger test
 name: Go Project CI
 on:
   push:
