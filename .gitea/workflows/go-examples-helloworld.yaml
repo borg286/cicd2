@@ -10,9 +10,17 @@ jobs:
   bazel-build:
     runs-on: bazel-heavy
     steps:
-      - name: Manual Clone
+      - name: Manual Clone or Update
         run: |
-          git clone http://x-access-token:${{ secrets.GITHUB_TOKEN }}@forgejo-http.forgejo:3000/${{ github.repository }}.git .
+          REPO_DIR="/home/user/my-repo"
+          if [ ! -d "$REPO_DIR/.git" ]; then
+            git clone http://x-access-token:${{ secrets.GITHUB_TOKEN }}@forgejo-http.forgejo:3000/${{ github.repository }}.git "$REPO_DIR"
+          else
+            cd "$REPO_DIR"
+            git fetch
+          fi
+          cd "$REPO_DIR"
+          git checkout ${{ github.sha }}
       - name: Check Bazel Server Status
         run: |
           echo "=== Checking Bazel processes ==="
@@ -25,7 +33,10 @@ jobs:
           df -h
           free -h
       - name: Bazel Run Push
-        run: bash -x go/examples/helloworld/build-test-push.sh
+        run: |
+          cd /home/user/my-repo
+          bash -x go/examples/helloworld/build-test-push.sh
         env:
           ACTIONS_RUNNER_DEBUG: true
+
 
