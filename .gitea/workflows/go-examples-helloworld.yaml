@@ -25,4 +25,7 @@ jobs:
           df -h
           free -h
       - name: Bazel Run Push
-        run: sh go/examples/helloworld/build-test-push.sh
+        run: bash -x go/examples/helloworld/build-test-push.sh
+        env:
+          ACTIONS_RUNNER_DEBUG: true
+
