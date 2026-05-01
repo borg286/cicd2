@@ -44,7 +44,7 @@ spec:
       chart: helloworld
       # Flux replaces 'latest' with the actual digest (e.g., sha256:abcd...)
       # The setter below tells Flux to use the 'digest' property from the policy
-      version: "*" # {"$imagepolicy": "flux-system:helloworld-latest:digest"}
+      version: "*" # {"$imagepolicy": "flux-system:helloworld-chart-policy:digest"}
       sourceRef:
         kind: HelmRepository
         name: zot-charts

@@ -41,6 +41,7 @@ helm_chart(
     chart = "Chart.yaml",
     values = "values.yaml",
     templates = glob(["templates/**"]),
+    # Note if a single image is passed in then {bazel.image.url} will be replaced with the image repository url along with its digest
     images = ["//go/examples/helloworld:push_oci"], 
     registry_url = "oci://zot-registry.zot-system.svc.cluster.local:5000/charts",
     #stamp = 1,
