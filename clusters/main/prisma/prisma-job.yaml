@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: prisma-migrate
+  namespace: cockroachdb-system
+  annotations:
+    reconcile.fluxcd.io/requestedAt: "string-to-be-replaced-by-flux" 
+spec:
+  template:
+    spec:
+      containers:
+      - name: prisma
+        image: node:latest
+        command: 
+          - "sh"
+          - "-c"
+          - |
+            # 1. Create a writable workspace
+            mkdir -p /tmp/prisma-work
+            # 2. Copy the schema from the read-only ConfigMap to the workspace
+            cp /prisma/schema.prisma /tmp/prisma-work/schema.prisma
+            cd /tmp/prisma-work
+            
+            # 3. Install dependencies in the writable /tmp directory
+            npm install pg prisma@5.22.0 --silent
+            
+            # 4. Run the migration
+            npx prisma db push --accept-data-loss --skip-generate
+            
+            # 5. Run your post-migration script
+            node -e "
+            const { Client } = require('pg');
+            async function run() {
+              const client = new Client(process.env.DATABASE_URL);
+              try {
+                await client.connect();
+                await client.query('ALTER TABLE \"User\" SET LOCALITY REGIONAL BY ROW;');
+                await client.query('ALTER TABLE \"Talent\" SET LOCALITY REGIONAL BY ROW;');
+                console.log('Applied CockroachDB commands successfully.');
+              } catch (e) {
+                console.error(e);
+                process.exit(1);
+              } finally {
+                await client.end();
+              }
+            }
+            run();
+            "
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://root@cockroachdb-public.cockroachdb-system:26257/defaultdb?sslmode=disable"
+        volumeMounts:
+        - name: schema-volume
+          mountPath: /prisma
+      volumes:
+      - name: schema-volume
+        configMap:
+          name: prisma-schema-files
+      restartPolicy: OnFailure

@@ -1,0 +1,26 @@
+// schema.prisma
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  region      String @default(dbgenerated("gateway_region()")) // Automatically assigns the region of the node handling the write
+  email       String @unique
+  name        String?
+
+  @@id([region, id]) // Composite primary key is standard for regional by row
+}
+
+model Talent {
+  id          String @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  region      String @default(dbgenerated("gateway_region()"))
+  name        String?
+
+  @@id([region, id])
+}

@@ -1,0 +1,21 @@
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: users-resources
+  namespace: flux-system
+spec:
+  interval: 5m
+  approvePlan: "auto"
+  serviceAccountName: tf-runner
+  path: ./clusters/main/tofu-controller/terraform-scripts/users
+  sourceRef:
+    kind: GitRepository
+    name: forgejo-main-repo
+    namespace: flux-system
+  varsFrom:
+    - kind: Secret
+      name: forgejo-tf-auth
+      varsKeys:
+        - admin_username
+        - admin_password
+        - token

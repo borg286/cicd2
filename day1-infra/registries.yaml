@@ -1,0 +1,12 @@
+mirrors:
+  "docker.io":
+    endpoint:
+      - "http://zot-registry.zot-system.svc.cluster.local:5000"
+  "*":
+    endpoint:
+      - "http://zot-registry.zot-system.svc.cluster.local:5000"
+
+configs:
+  "zot-registry.zot-system.svc.cluster.local:5000":
+    tls:
+      insecure_skip_verify: true

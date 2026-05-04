@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nativelink
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: nativelink
+  namespace: flux-system
+spec:
+  interval: 1h
+  type: oci
+  url: oci://public.ecr.aws/b1l4l6w7/tracemachina
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nativelink
+  namespace: nativelink
+spec:
+  releaseName: nativelink
+  chart:
+    spec:
+      chart: nativelink
+      version: 1.0.0-rc1
+      sourceRef:
+        kind: HelmRepository
+        name: nativelink
+        namespace: flux-system
+  interval: 1h
+  values:
+    cas:
+      enabled: true
+      cloudProvider: "filesystem"
+      persistentVolume:
+        enabled: true
+        size: 20Gi
+      rbe:
+        enabled: true
+        defaultCpuCount: "1000"
+    workers:
+      enabled: true
+      specs:
+      - name: worker-1
+        replicas: 1
+        podImage: "buildpack-deps:bookworm"
+        configMapName: default-worker-config
+        platformProperties:
+          containerImage: "buildpack-deps:bookworm"
+          osFamily: Linux
+          ISA: "x86-64"
+          cpuCount: 1000
+          memoryKb: 1000000
+        resources:
+          requests:
+            cpu: 0.1
+            memory: "1Gi"
+        hpa:
+          enabled: false
+    redis:
+      enabled: true
+      image:
+        registry: docker.io
+        repository: redis
+        tag: trixie
+      sentinel:
+        enabled: false
+      metrics:
+        enabled: false

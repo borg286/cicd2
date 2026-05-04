@@ -1,0 +1,15 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cockroach-cluster
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./clusters/main/cockroach
+  sourceRef:
+    kind: GitRepository
+    name: forgejo-main-repo
+  prune: true
+  wait: true
+  dependsOn:
+    - name: cockroach-operator

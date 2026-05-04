@@ -1,75 +1,36 @@
-# CI/CD Pipeline for Gitea and Tofu Controller
+Sovereign GitOps Bootstrap
+This guide outlines the "Two-Step" bootstrap process to link a local k3d cluster with a self-hosted Forgejo instance and FluxCD.
 
-This repository contains the configuration for a GitOps pipeline using Flux CD and Tofu Controller (OpenTofu) to manage Gitea/Forgejo resources.
+Phase 1: Infrastructure
+Navigate to day1-infra/.
 
-## Architecture
+Run terraform init && terraform apply.
 
-The repository is organized into two main areas to support clean bootstrapping and ongoing GitOps management:
+This installs the Forgejo and Flux controllers. Wait for the pods to be Ready.
 
-### 1. Bootstrap Folder (`bootstrap/`)
-- Contains files needed to initialize the cluster before Flux is fully operational.
-- **`bootstrap.sh`**: An imperative script that creates initial namespaces, generates random passwords, creates Kubernetes secrets, and installs Flux CD.
-- **`tf-controller-install.yaml`**: The manifest to install Tofu Controller. This file is kept here to serve as documentation for the required bootstrapping components and can be applied manually if needed.
+Phase 2: The Bridge (Manual)
+Terraform cannot reach the internal Forgejo API from your host machine yet. You must create a tunnel:
 
-### 2. Cluster Folder (`clusters/my-cluster/`)
-- Contains the state of the cluster managed by Flux.
-- **`flux-system/kustomization.yaml`**: The main Kustomization file for cluster resources.
-- To avoid duplication, this file references `tf-controller-install.yaml` in the `bootstrap` folder using a relative path: `../../../bootstrap/tf-controller-install.yaml`.
+Bash
+# Open a new terminal and keep this running
+kubectl port-forward -n forgejo svc/forgejo-http 3000:3000
+Phase 3: Configuration & Seeding
+Initialize the Repo: Navigate to your day2-config/ and run terraform init && terraform apply. This creates the infra-org/cluster-config repository.
 
-This setup ensures that Tofu Controller is applied during bootstrapping and continues to be managed by Flux afterward, without duplicating the manifest file.
+Seed the Data:
+Push your local files to the new Forgejo server:
 
-## Bootstrapping Instructions
+Bash
+cd ../bootstrap-repo
+git init
+git remote add origin http://localhost:3000/main-org/main-repo.git
+git add .
+git commit -m "initial bootstrap"
+#The "Force" move: -f overwrites the remote 'main' branch regardless of history
+git push -f -u origin main
+Phase 4: Verification
+Check Flux's status within the cluster:
 
-To bootstrap a new cluster, follow these steps:
-
-```bash
-#!/bin/bash
-
-set -e
-
-# Function to generate random password
-generate_password() {
-  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1
-}
-
-# Create namespaces if they don't exist
-kubectl create namespace forgejo --dry-run=client -o yaml | kubectl apply -f -
-kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f -
-
-# Generate passwords
-FORGEJO_ADMIN_PASS=$(generate_password)
-GITEA_ADMIN_PASS=$(generate_password)
-GITEA_FLUX_PASS=$(generate_password)
-
-# Create secrets
-kubectl create secret generic forgejo-admin \
-  --namespace forgejo \
-  --from-literal=username=admin \
-  --from-literal=password="$FORGEJO_ADMIN_PASS" \
-  --dry-run=client -o yaml | kubectl apply -f -
-
-kubectl create secret generic gitea-admin \
-  --namespace flux-system \
-  --from-literal=username=admin \
-  --from-literal=password="$GITEA_ADMIN_PASS" \
-  --dry-run=client -o yaml | kubectl apply -f -
-
-kubectl create secret generic gitea-flux-password \
-  --namespace flux-system \
-  --from-literal=flux_user_password="$GITEA_FLUX_PASS" \
-  --dry-run=client -o yaml | kubectl apply -f -
-
-echo "Secrets created successfully."
-echo "Forgejo Admin Password: $FORGEJO_ADMIN_PASS"
-echo "Gitea Admin Password: $GITEA_ADMIN_PASS"
-echo "Gitea Flux Password: $GITEA_FLUX_PASS"
-echo "Please save these credentials securely."
-
-kubectl apply -f https://github.com/fluxcd/flux2/releases/latest/download/install.yaml
-kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/tf-controller-install.yaml
-kubectl apply -f https://raw.githubusercontent.com/borg286/cicd2/refs/heads/main/bootstrap/gotk-sync.yaml
-
-```
-
-## Future Modifications
-To update the Tofu Controller version or configuration, modify the file in the `bootstrap/` folder and Flux will automatically reconcile the changes in the cluster.
+Bash
+flux get sources git
+Flux will now pull from the internal address [http://forgejo-http.forgejo.svc.cluster.local:3000/](http://forgejo-http.forgejo.svc.cluster.local:3000/)... which bypasses the need for the port-forward for ongoing operations.

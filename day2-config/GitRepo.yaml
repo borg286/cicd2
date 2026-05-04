@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: forgejo-main-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  ref:
+    branch: main
+  url: http://forgejo-http.forgejo.svc.cluster.local:3000/main-org/main-repo.git
+ 

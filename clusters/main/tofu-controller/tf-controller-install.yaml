@@ -1,0 +1,62 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: tofu-controller
+  namespace: flux-system
+spec:
+  url: https://flux-iac.github.io/tofu-controller
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tf-runner-cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: tf-runner
+  namespace: flux-system
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tofu-controller
+  namespace: flux-system
+spec:
+  chart:
+    spec:
+      chart: tf-controller
+      sourceRef:
+        kind: HelmRepository
+        name: tofu-controller
+      # Upgrade to 0.16.x once we have a k8s cluster greater than 33
+      # flux crds that have OCIRepository for version source.toolkit.fluxcd.io/v1 require
+      # a higher version of k8s, but our k3d doesn't support that k8s version yet.
+      # So we downgrade our tofu controller to align with our flux version
+      version: '0.15.1'
+  interval: 1h0s
+  releaseName: tofu-controller
+  targetNamespace: flux-system
+  install:
+    crds: Create
+    remediation:
+      retries: -1
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: -1
+  values:
+    replicaCount: 3
+    concurrency: 24
+    resources:
+    caCertValidityDuration: 24h
+    certRotationCheckFrequency: 30m
+    image:
+      tag: v0.15.1
+    runner:
+      image:
+        tag: v0.15.1
+      grpc:
+        maxMessageSize: 30
