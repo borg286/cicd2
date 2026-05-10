@@ -1,0 +1,13 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-test
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+parameters:
+  numberOfReplicas: "1" # Using 1 for now since we only have one node bootstrapped
+  staleReplicaTimeout: "2880"
+  fromBackup: ""
+  fsType: "ext4"

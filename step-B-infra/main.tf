@@ -15,11 +15,39 @@ provider "helm" {
   }
 }
 
+variable "install_longhorn" {
+  description = "Enable or disable Longhorn installation."
+  type        = bool
+  default     = true
+}
+
 variable "forgejo_password" {
   type        = string
   description = "The admin password for Forgejo"
   sensitive   = true
   # No default value means Terraform will prompt you if it's not provided
+}
+
+# Apply Longhorn namespace and storageclass (YAML manifests are already in the repo).
+resource "kubernetes_manifest" "longhorn_namespace" {
+  count = var.install_longhorn ? 1 : 0
+  yaml_body = file("${path.module}/longhorn-namespace.yaml")
+}
+
+resource "kubernetes_manifest" "longhorn_storageclass" {
+  count = var.install_longhorn ? 1 : 0
+  yaml_body = file("${path.module}/longhorn-storageclass.yaml")
+}
+
+# Install Longhorn via Helm using the supplied values file.
+resource "helm_release" "longhorn" {
+  count = var.install_longhorn ? 1 : 0
+  name       = "longhorn"
+  repository = "https://charts.longhorn.io"
+  chart      = "longhorn"
+  namespace  = "longhorn-system"
+  values     = [file("${path.module}/longhorn-values.yaml")]
+  depends_on = var.install_longhorn ? [kubernetes_manifest.longhorn_namespace[0]] : []
 }
 
 resource "kubernetes_namespace_v1" "forgejo" {
