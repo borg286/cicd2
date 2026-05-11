@@ -1,26 +1,27 @@
-debug: true
+# controlplane-patch.yaml
 machine:
   registries:
     mirrors:
-      "docker.io":
-        endpoint:
+      docker.io:
+        endpoints:
           - "http://zot-registry.zot-system.svc.cluster.local:5000"
       "*":
-        endpoint:
+        endpoints:
           - "http://zot-registry.zot-system.svc.cluster.local:5000"
-    configs:
+    config:
       "zot-registry.zot-system.svc.cluster.local:5000":
         tls:
-          insecure_skip_verify: true
+          # Remove insecure_skip_verify if it's not a valid key
+          # or use the correct schema for registry TLS config
   install:
     disk: /dev/nvme0n1
     wipe: true
-kubelet:
-  extraMounts:
-    - destination: /var/lib/longhorn
-      type: bind
-      source: /var/lib/longhorn
-      options:
-        - bind
-        - rshared
-        - rw
+  kubelet:
+    extraMounts:
+      - destination: /var/lib/longhorn
+        type: bind
+        source: /var/lib/longhorn
+        options:
+          - bind
+          - rshared
+          - rw

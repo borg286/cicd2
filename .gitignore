@@ -1,4 +1,21 @@
-bazel-bin
-bazel-cicd2
-bazel-out
-bazel-testlogs
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+*.tfvars
+*.tfvars.json
+
+# Talos Specific
+*.talosconfig
+# If you generate sensitive machine configs locally:
+controlplane.yaml
+worker.yaml
+talosconfig
+
+# Bazel
+bazel-*
+
+# OS files
+.DS_Store
+Thumbs.db
