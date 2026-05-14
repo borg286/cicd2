@@ -5,12 +5,14 @@
 .terraform.lock.hcl
 *.tfvars
 *.tfvars.json
-
+*.helm/
 # Talos Specific
 *.talosconfig
 # If you generate sensitive machine configs locally:
 controlplane.yaml
 worker.yaml
+talosconfig
+kubeconfig
 talosconfig
 
 # Bazel

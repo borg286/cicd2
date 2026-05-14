@@ -6,12 +6,14 @@ terraform {
 }
 
 provider "kubernetes" {
-  config_path = "~/.kube/config" # Adjust for k3d
+  config_path = "../../../kubeconfig"
 }
 
 provider "helm" {
+  repository_config_path = "${path.module}/.helm/repository/config.yaml"
+  repository_cache       = "${path.module}/.helm/repository/cache"
   kubernetes = {
-    config_path = "~/.kube/config"
+    config_path = "../../../kubeconfig"
   }
 }
 
@@ -31,12 +33,12 @@ variable "forgejo_password" {
 # Apply Longhorn namespace and storageclass (YAML manifests are already in the repo).
 resource "kubernetes_manifest" "longhorn_namespace" {
   count = var.install_longhorn ? 1 : 0
-  yaml_body = file("${path.module}/longhorn-namespace.yaml")
+  manifest = yamldecode(file("${path.module}/longhorn-namespace.yaml"))
 }
 
 resource "kubernetes_manifest" "longhorn_storageclass" {
   count = var.install_longhorn ? 1 : 0
-  yaml_body = file("${path.module}/longhorn-storageclass.yaml")
+  manifest = yamldecode(file("${path.module}/longhorn-storageclass.yaml"))
 }
 
 # Install Longhorn via Helm using the supplied values file.
@@ -47,7 +49,7 @@ resource "helm_release" "longhorn" {
   chart      = "longhorn"
   namespace  = "longhorn-system"
   values     = [file("${path.module}/longhorn-values.yaml")]
-  depends_on = var.install_longhorn ? [kubernetes_manifest.longhorn_namespace[0]] : []
+  depends_on = [kubernetes_manifest.longhorn_namespace]
 }
 
 resource "kubernetes_namespace_v1" "forgejo" {
@@ -87,29 +89,28 @@ metadata {
 }
 
 # 2. Install Forgejo
-resource "helm_release" "forgejo" {
-  name       = "forgejo"
-  # For OCI, the full path goes here, NOT in the repository attribute
-  chart      = "oci://code.forgejo.org/forgejo-helm/forgejo"
-  version    = "17.0.1" # Version is required for OCI charts in Terraform
-  
-  namespace  = kubernetes_namespace_v1.forgejo.metadata[0].name
-  wait       = true
-
-  values = [yamlencode({
-    gitea = {
-      admin = {
-        existingSecret = kubernetes_secret_v1.forgejo_admin.metadata[0].name
-        email = "admin@example.com"
-      }
-      config = {
-        server = {
-          ROOT_URL = "http://forgejo-http.forgejo.svc.cluster.local:3000/"
-        }
-      }
-    }
-  })]
-}
+#resource "helm_release" "forgejo" {
+#  name       = "forgejo"
+#  # For OCI, the full path goes here, NOT in the repository attribute
+#  chart      = "oci://code.forgejo.org/forgejo-helm/forgejo"
+#  version    = "17.0.1" # Version is required for OCI charts in Terraform
+#  namespace  = kubernetes_namespace_v1.forgejo.metadata[0].name
+#  wait       = true
+#
+#  values = [yamlencode({
+#    gitea = {
+#      admin = {
+#        existingSecret = kubernetes_secret_v1.forgejo_admin.metadata[0].name
+#        email = "admin@example.com"
+#      }
+#      config = {
+#        server = {
+#          ROOT_URL = "http://forgejo-http.forgejo.svc.cluster.local:3000/"
+#        }
+#      }
+#    }
+#  })]
+#}
 
 # 3. Install Flux (CRDs and Controllers)
 resource "helm_release" "flux" {

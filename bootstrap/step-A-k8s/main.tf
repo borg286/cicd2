@@ -30,20 +30,43 @@ data "talos_client_configuration" "this" {
   nodes                = [var.ip_addr]
 }
 
+
+resource "talos_image_factory_schematic" "this" {
+  schematic = yamlencode({
+    customization = {
+      systemExtensions = {
+        officialExtensions = [
+          "siderolabs/iscsi-tools",
+          "siderolabs/util-linux-tools"
+        ]
+      }
+    }
+  })
+}
+
+
+data "talos_image_factory_urls" "this" {
+  talos_version = "v1.13.1"
+  schematic_id  = resource.talos_image_factory_schematic.this.id
+  platform      = "metal"
+}
+
+output "talos_installer_url" {
+  description = "The generated Talos installer image URL"
+  value       = data.talos_image_factory_urls.this.urls.installer
+}
+
 resource "talos_machine_configuration_apply" "this" {
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.this.machine_configuration
   node                        = var.ip_addr
   config_patches = [
     yamlencode({
-      machine = {  # Keep this, but ensure everything else is inside it
+      machine = {
         install = {
           disk = "/dev/nvme0n1"
+          image = data.talos_image_factory_urls.this.urls.installer
           wipe = true
-          extensions = [
-            { image = "ghcr.io/siderolabs/iscsi-tools:v0.1.4" },
-            { image = "ghcr.io/siderolabs/util-linux-tools:v0.1.0" }
-          ]
         }
         registries = {
           mirrors = {
@@ -77,6 +100,9 @@ resource "talos_machine_configuration_apply" "this" {
           ]
         }
       }
+      cluster = {
+        allowSchedulingOnControlPlanes = true
+      }
     })
   ]
 }
@@ -107,4 +133,14 @@ output "talos_kubeconfig" {
 output "talos_machine_secrets" {
   value = talos_machine_secrets.this.machine_secrets
   sensitive = true
+}
+
+resource "local_file" "kubeconfig" {
+  content  = talos_cluster_kubeconfig.this.kubeconfig_raw
+  filename = "${path.module}/../../../kubeconfig"
+}
+
+resource "local_file" "talosconfig" {
+  content  = data.talos_client_configuration.this.talos_config
+  filename = "${path.module}/../../../talosconfig"
 }
