@@ -27,10 +27,11 @@ provider "kubernetes" {
 }
 
 resource "gitea_team" "devs" {
-  name         = "Devs"
-  organisation = "main-org"
-  description  = "Devs of my-org"
-  permission   = "write"
+  name                      = "Devs"
+  organisation              = "main-org"
+  description               = "Devs of my-org"
+  permission                = "write"
+  includes_all_repositories = true
 }
 
 # Now hiring borg286 is just these 6 lines
