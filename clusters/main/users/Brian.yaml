@@ -87,20 +87,29 @@ spec:
               chmod +x kubectl k9s bazelisk
 
               # 2. Workspace & Git Setup
+              # Create Git wrapper to handle token rotation
+              cat <<EOF > /usr/local/bin/git
+#!/bin/sh
+if [ -f /var/run/secrets/kubernetes.io/serviceaccount/token ]; then
+  TOKEN=\$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+  exec /usr/bin/git -c "http.extraHeader=Authorization: Bearer \$TOKEN" "\$@"
+else
+  exec /usr/bin/git "\$@"
+fi
+EOF
+              chmod +x /usr/local/bin/git
+
               mkdir -p /config/workspace/project
               if [ ! -d "/config/workspace/project/.git" ]; then
-                # Read K8s SA token
-                TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
                 GIT_URL="http://forgejo-auth-gateway.forgejo/main-org/main-repo.git"
                 
-                # Clone using Bearer token
-                git clone -o origin -c http.extraHeader="Authorization: Bearer $TOKEN" "$GIT_URL" /config/workspace/project
+                # Clone using the new wrapper
+                /usr/local/bin/git clone -o origin "$GIT_URL" /config/workspace/project
                 
                 cd /config/workspace/project
-                git config user.name "Brian Matthews"
-                git config user.email "borg286@gmail.com"
-                # Persist the token header in the local repo config
-                git config http.extraHeader "Authorization: Bearer $TOKEN"
+                /usr/local/bin/git config user.name "Brian Matthews"
+                /usr/local/bin/git config user.email "borg286@gmail.com"
+                # No longer persisting the token; the wrapper handles it
               fi
               chown -R 1000:1000 /config
               chown -R 1000:1000 /usr/local/bin

@@ -21,10 +21,13 @@ data:
   nginx.conf: |
     events {}
     http {
-      # Mapping system:serviceaccount:NAMESPACE:NAME to NAMESPACE-NAME
+      # Mapping system:serviceaccount:NAMESPACE:NAME to Forgejo username
       map $http_x_remote_user $forgejo_username {
-        "~^system:serviceaccount:([^:]+):(.+)$"  $1-$2;
-        default                                  $http_x_remote_user;
+        # If the SA is code-server-sa, map it to just the namespace (e.g. borg286)
+        "~^system:serviceaccount:([^:]+):code-server-sa$"  $1;
+        # Default mapping for other SAs
+        "~^system:serviceaccount:([^:]+):(.+)$"            $1-$2;
+        default                                            $http_x_remote_user;
       }
 
       server {
