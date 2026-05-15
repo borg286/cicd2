@@ -5,6 +5,31 @@ terraform {
   }
 }
 
+locals {
+  forgejo_dir = "${path.module}/../../clusters/main/forgejo"
+
+  # Extra manifests from cluster folder
+  forgejo_cluster_manifest_files = [
+    "forgejo-auth-proxy.yaml"
+  ]
+  
+  # Extra manifests from bootstrap folder (skeleton)
+  forgejo_bootstrap_manifest_files = [
+    "skeleton-rbac.yaml"
+  ]
+  
+  forgejo_extra_manifests = flatten([
+    # Cluster manifests
+    [for f in local.forgejo_cluster_manifest_files : [
+      for doc in split("---", file("${local.forgejo_dir}/${f}")) : yamldecode(doc) if trimspace(doc) != ""
+    ]],
+    # Bootstrap manifests
+    [for f in local.forgejo_bootstrap_manifest_files : [
+      for doc in split("---", file("${path.module}/${f}")) : yamldecode(doc) if trimspace(doc) != ""
+    ]]
+  ])
+}
+
 provider "kubernetes" {
   config_path = "../../../kubeconfig"
 }
@@ -88,31 +113,7 @@ metadata {
   }
 }
 
-# 2. Install Forgejo
-#resource "helm_release" "forgejo" {
-#  name       = "forgejo"
-#  # For OCI, the full path goes here, NOT in the repository attribute
-#  chart      = "oci://code.forgejo.org/forgejo-helm/forgejo"
-#  version    = "17.0.1" # Version is required for OCI charts in Terraform
-#  namespace  = kubernetes_namespace_v1.forgejo.metadata[0].name
-#  wait       = true
-#
-#  values = [yamlencode({
-#    gitea = {
-#      admin = {
-#        existingSecret = kubernetes_secret_v1.forgejo_admin.metadata[0].name
-#        email = "admin@example.com"
-#      }
-#      config = {
-#        server = {
-#          ROOT_URL = "http://forgejo-http.forgejo.svc.cluster.local:3000/"
-#        }
-#      }
-#    }
-#  })]
-#}
-
-# 3. Install Flux (CRDs and Controllers)
+# 2. Install Flux (CRDs and Controllers)
 resource "helm_release" "flux" {
   name             = "flux2"
   repository       = "https://fluxcd-community.github.io/helm-charts"
@@ -127,3 +128,36 @@ resource "helm_release" "flux" {
     })
   ]
 }
+
+# 3. Install Forgejo (Relying on Flux CRDs via kubernetes_manifest)
+resource "kubernetes_manifest" "forgejo_helm_repo" {
+  manifest = yamldecode(file("${local.forgejo_dir}/helm-repo.yaml"))
+  
+  # Wait for Flux to be installed so the HelmRepository CRD exists
+  depends_on = [helm_release.flux]
+}
+
+resource "kubernetes_manifest" "forgejo_helm_release" {
+  manifest = yamldecode(file("${local.forgejo_dir}/helm-release.yaml"))
+  
+  # Wait for Flux and the repository to be ready
+  depends_on = [
+    helm_release.flux, 
+    kubernetes_manifest.forgejo_helm_repo,
+    kubernetes_secret_v1.forgejo_admin
+  ]
+}
+
+# Apply extra Forgejo manifests (Auth Proxy, RBAC, etc.)
+resource "kubernetes_manifest" "forgejo_extra" {
+  for_each = {
+    for m in local.forgejo_extra_manifests :
+    "${m.kind}--${m.metadata.name}--${lookup(m.metadata, "namespace", "cluster")}" => m
+  }
+
+  manifest = each.value
+
+  # Depends on the namespace being ready
+  depends_on = [kubernetes_namespace_v1.forgejo]
+}
+

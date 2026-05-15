@@ -64,11 +64,6 @@ spec:
               value: "v0.32.4"
             - name: BAZELISK_VERSION
               value: "v1.19.0"
-            - name: GITEA_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: git-credentials
-                  key: token
           command:
             - "/bin/sh"
             - "-c"
@@ -94,11 +89,18 @@ spec:
               # 2. Workspace & Git Setup
               mkdir -p /config/workspace/project
               if [ ! -d "/config/workspace/project/.git" ]; then
-                # Use a temporary global config for the clone
-                git clone -o origin http://${GITEA_TOKEN}@forgejo-http.forgejo:3000/main-org/main-repo.git /config/workspace/project
+                # Read K8s SA token
+                TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+                GIT_URL="http://forgejo-auth-gateway.forgejo/main-org/main-repo.git"
+                
+                # Clone using Bearer token
+                git clone -o origin -c http.extraHeader="Authorization: Bearer $TOKEN" "$GIT_URL" /config/workspace/project
+                
                 cd /config/workspace/project
                 git config user.name "Brian Matthews"
                 git config user.email "borg286@gmail.com"
+                # Persist the token header in the local repo config
+                git config http.extraHeader "Authorization: Bearer $TOKEN"
               fi
               chown -R 1000:1000 /config
               chown -R 1000:1000 /usr/local/bin

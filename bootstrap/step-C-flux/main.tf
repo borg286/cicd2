@@ -59,14 +59,7 @@ resource "gitea_token" "admin_provisioner" {
   scopes = ["all"] 
 }
 
-# 2. Scoped token for your downstream "User-Resources" Terraform
-resource "gitea_token" "user_manager" {
-  name   = "user-management-token"
-  # Note: Forgejo requires 'write:admin' or 'admin:all' to create users via API
-  scopes = ["write:admin", "write:user", "write:organization"] 
-}
-
-# 3. Fetch the system-wide runner registration token
+# 2. Fetch the system-wide runner registration token
 resource "terracurl_request" "runner_registration_token" {
   name   = "runner_registration_token"
   # Ensure DNS matches your internal service name
@@ -80,7 +73,7 @@ resource "terracurl_request" "runner_registration_token" {
   response_codes = [200]
 }
 
-# 4. Secret for Gitea Runners (System-wide registration)
+# 3. Secret for Gitea Runners (System-wide registration)
 resource "kubernetes_secret_v1" "runner_token" {
   metadata {
     name      = "runner-token"
@@ -95,19 +88,5 @@ resource "kubernetes_secret_v1" "runner_token" {
   }
 }
 
-# 5. Secret for the Tofu-Controller (User Provisioning)
-resource "kubernetes_secret_v1" "forgejo_tf_auth" {
-  metadata {
-    name      = "forgejo-tf-auth"
-    namespace = "flux-system"
-  }
-
-  type = "Opaque"
-
-  data = {
-    # Directly using the token attribute from the user_manager resource
-    token = gitea_token.user_manager.token
-    admin_username = "forgejo-admin"
-    admin_password = var.forgejo_password
-  }
-}
+# User management is now handled via Kubernetes ServiceAccount tokens.
+# Terraform no longer needs to create users or manage their PATs.
