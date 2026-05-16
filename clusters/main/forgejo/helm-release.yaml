@@ -21,55 +21,18 @@ spec:
         server:
           HTTP_ADDR: 0.0.0.0
           HTTP_PORT: 3000
-          # Using the gateway address as the root URL
-          ROOT_URL: "http://forgejo-auth-gateway.forgejo.svc.cluster.local"
+          # Using the native forgejo service address as the root URL
+          ROOT_URL: "http://forgejo.forgejo.svc.cluster.local:3000"
         service:
           DISABLE_REGISTRATION: false # Allow auto-registration to work
-          ENABLE_REVERSE_PROXY_AUTHENTICATION: true
-          REVERSE_PROXY_AUTHENTICATION_USER: X-Webauth-User
-          ENABLE_REVERSE_PROXY_AUTO_REGISTRATION: true
-          REVERSE_PROXY_TRUSTED_PROXIES: 127.0.0.1
+          ENABLE_REVERSE_PROXY_AUTHENTICATION: false
 
     serviceAccount:
       create: true
       name: forgejo
       automountServiceAccountToken: true
 
-    extraContainers:
-      - name: kube-rbac-proxy
-        image: quay.io/brancz/kube-rbac-proxy:v0.18.1
-        args:
-          - "--upstream=http://127.0.0.1:8082/"
-          - "--insecure-listen-address=0.0.0.0:8080"
-          - "--auth-header-fields-enabled"
-          - "--config-file=/etc/krbp/config.yaml"
-        ports:
-          - name: proxy
-            containerPort: 8080
-            protocol: TCP
-        volumeMounts:
-          - name: krbp-config
-            mountPath: /etc/krbp
-            readOnly: true
 
-      - name: nginx-transformer
-        image: nginx:1.27-alpine
-        ports:
-          - name: transformer
-            containerPort: 8082
-            protocol: TCP
-        volumeMounts:
-          - name: nginx-config
-            mountPath: /etc/nginx/nginx.conf
-            subPath: nginx.conf
-
-    extraVolumes:
-      - name: krbp-config
-        configMap:
-          name: forgejo-krbp-config
-      - name: nginx-config
-        configMap:
-          name: forgejo-nginx-transformer
 
     persistence:
       enabled: true

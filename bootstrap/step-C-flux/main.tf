@@ -90,3 +90,35 @@ resource "kubernetes_secret_v1" "runner_token" {
 
 # User management is now handled via Kubernetes ServiceAccount tokens.
 # Terraform no longer needs to create users or manage their PATs.
+
+# 4. Configure Dex OIDC Authentication Source
+resource "terracurl_request" "forgejo_dex_oidc" {
+  name   = "forgejo_dex_oidc"
+  url    = "http://localhost:3000/api/v1/admin/auths"
+  method = "POST"
+
+  headers = {
+    Authorization  = "token ${gitea_token.admin_provisioner.token}"
+    "Content-Type" = "application/json"
+  }
+
+  request_body = jsonencode({
+    name   = "Dex"
+    type   = "oauth2"
+    active = true
+    oauth2 = {
+      provider                           = "openidConnect"
+      client_id                          = "forgejo-client"
+      client_secret                      = "some-very-long-secure-shared-secret-string"
+      open_id_connect_auto_discovery_url = "http://dex.dex.svc.cluster.local:5556/.well-known/openid-configuration"
+      group_claim_name                   = "groups"
+      admin_group                        = "system:serviceaccounts:main"
+      group_team_map_mapping             = jsonencode({
+        "system:serviceaccounts:main"    = "main-org"
+      })
+    }
+  })
+
+  # Ignore 409 Conflict if the auth source already exists on subsequent applies
+  response_codes = [200, 201, 409]
+}

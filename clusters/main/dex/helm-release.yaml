@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dex
+  namespace: dex
+spec:
+  interval: 1h
+  chartRef:
+    kind: HelmRepository
+    name: dex
+    namespace: flux-system
+  chart:
+    spec:
+      chart: dex
+      version: ">=0.14.0"
+      sourceRef:
+        kind: HelmRepository
+        name: dex-chart
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  values:
+    config:
+      issuer: http://dex.dex.svc.cluster.local:5556
+      storage:
+        type: kubernetes
+        config:
+          inCluster: true
+      connectors:
+        - type: kubernetes
+          id: kubernetes
+          name: Kubernetes Service Accounts
+          config:
+            useClusterLocalServiceAccount: true
+      oauth2:
+        skipApprovalScreen: true
+      staticClients:
+        - id: forgejo-client
+          redirectURIs:
+            - 'http://forgejo.forgejo.svc.cluster.local:3000/user/oauth2/Dex/callback'
+            - 'https://your-public-forgejo.com/user/oauth2/Dex/callback'
+          name: 'Forgejo'
+          secret: some-very-long-secure-shared-secret-string

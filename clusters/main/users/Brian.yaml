@@ -87,16 +87,8 @@ spec:
               chmod +x kubectl k9s bazelisk
 
               # 2. Workspace & Git Setup
-              # Create Git wrapper to handle token rotation
-              cat <<EOF > /usr/local/bin/git
-#!/bin/sh
-if [ -f /var/run/secrets/kubernetes.io/serviceaccount/token ]; then
-  TOKEN=\$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-  exec /usr/bin/git -c "http.extraHeader=Authorization: Bearer \$TOKEN" "\$@"
-else
-  exec /usr/bin/git "\$@"
-fi
-EOF
+              # Create Git wrapper to handle token rotation using printf to avoid YAML indentation issues
+              printf '#!/bin/sh\nif [ -f /var/run/secrets/kubernetes.io/serviceaccount/token ]; then\n  TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\n  exec /usr/bin/git -c "http.extraHeader=Authorization: Bearer $TOKEN" "$@"\nelse\n  exec /usr/bin/git "$@"\nfi\n' > /usr/local/bin/git
               chmod +x /usr/local/bin/git
 
               mkdir -p /config/workspace/project
@@ -110,6 +102,10 @@ EOF
                 /usr/local/bin/git config user.name "Brian Matthews"
                 /usr/local/bin/git config user.email "borg286@gmail.com"
                 # No longer persisting the token; the wrapper handles it
+              else
+                # Clean up static token from older PVCs
+                cd /config/workspace/project
+                /usr/local/bin/git config --unset-all http.extraHeader || true
               fi
               chown -R 1000:1000 /config
               chown -R 1000:1000 /usr/local/bin
@@ -139,6 +135,7 @@ EOF
                       done < /config/extensions_to_install.txt
                       rm /config/extensions_to_install.txt
                     fi
+                    git config --global --add safe.directory /config/workspace/project
           env:
             - name: PUID
               value: "1000"

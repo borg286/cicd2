@@ -7,6 +7,7 @@ resources:
   - dashboards
   - grafana
   - minio
+  - dex
   - forgejo
   - nativelink
   #- prisma
@@ -14,4 +15,3 @@ resources:
   - tofu-controller
   - users
   - zot
-
