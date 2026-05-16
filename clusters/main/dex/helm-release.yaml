@@ -5,10 +5,6 @@ metadata:
   namespace: dex
 spec:
   interval: 1h
-  chartRef:
-    kind: HelmRepository
-    name: dex
-    namespace: flux-system
   chart:
     spec:
       chart: dex

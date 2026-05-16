@@ -1,0 +1,118 @@
+---
+# ServiceAccount for the gateway pod so it can call TokenReview API
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: git-auth-gateway
+  namespace: forgejo
+---
+# Permission to validate incoming SA tokens via TokenReview
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: git-auth-gateway-tokenreview
+rules:
+  - apiGroups: ["authentication.k8s.io"]
+    resources: ["tokenreviews"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: git-auth-gateway-tokenreview
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: git-auth-gateway-tokenreview
+subjects:
+  - kind: ServiceAccount
+    name: git-auth-gateway
+    namespace: forgejo
+---
+# nginx (openresty) config: reads X-Remote-User from kube-rbac-proxy,
+# extracts just the ServiceAccount name (last colon-segment), and proxies
+# to Forgejo with X-WEBAUTH-USER so reverse-proxy auth picks it up.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: git-auth-gateway-nginx
+  namespace: forgejo
+data:
+  nginx.conf: |
+    events {}
+    http {
+      server {
+        listen 8081;
+        location / {
+          set_by_lua_block $webauth_user {
+            local remote_user = ngx.var.http_x_remote_user or ""
+            -- system:serviceaccount:borg286:code-server-sa -> code-server-sa
+            local name = remote_user:match("[^:]+$")
+            return name or remote_user
+          }
+          proxy_set_header X-WEBAUTH-USER  $webauth_user;
+          proxy_set_header Authorization   "";
+          proxy_set_header Host            forgejo.forgejo.svc.cluster.local;
+          proxy_pass http://forgejo.forgejo.svc.cluster.local:3000;
+        }
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-auth-gateway
+  namespace: forgejo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: git-auth-gateway
+  template:
+    metadata:
+      labels:
+        app: git-auth-gateway
+    spec:
+      serviceAccountName: git-auth-gateway
+      containers:
+        # Validates the Kubernetes SA Bearer token and forwards the
+        # authenticated identity in X-Remote-User to the nginx sidecar.
+        - name: kube-rbac-proxy
+          image: quay.io/brancz/kube-rbac-proxy:v0.18.2
+          args:
+            - "--insecure-listen-address=0.0.0.0:8080"
+            - "--upstream=http://localhost:8081/"
+            - "--logtostderr=true"
+            - "--v=2"
+            - "--auth-header-fields-enabled=true"
+          ports:
+            - containerPort: 8080
+              name: http
+        # Translates X-Remote-User -> X-WEBAUTH-USER (Forgejo reverse proxy header)
+        - name: nginx
+          image: openresty/openresty:alpine
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /usr/local/openresty/nginx/conf/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: git-auth-gateway-nginx
+---
+# Brian.yaml clones from http://forgejo-auth-gateway.forgejo/...
+# This service provides that hostname in the forgejo namespace.
+apiVersion: v1
+kind: Service
+metadata:
+  name: forgejo-auth-gateway
+  namespace: forgejo
+spec:
+  selector:
+    app: git-auth-gateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

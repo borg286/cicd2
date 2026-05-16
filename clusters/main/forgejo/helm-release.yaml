@@ -25,7 +25,11 @@ spec:
           ROOT_URL: "http://forgejo.forgejo.svc.cluster.local:3000"
         service:
           DISABLE_REGISTRATION: false # Allow auto-registration to work
-          ENABLE_REVERSE_PROXY_AUTHENTICATION: false
+          ENABLE_REVERSE_PROXY_AUTHENTICATION: true
+          # Trust all in-cluster sources; restrict to pod CIDR if needed
+          REVERSE_PROXY_TRUSTED_PROXIES: "*"
+          # Header set by the git-auth-gateway proxy
+          REVERSE_PROXY_AUTHENTICATION_USER: X-WEBAUTH-USER
 
     serviceAccount:
       create: true
